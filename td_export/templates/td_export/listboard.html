@@ -1,0 +1,38 @@
+{% extends "edc_dashboard/listboard.html" %}
+{% load admin_urls %}
+{% load edc_base_extras %}
+{% load td_dashboard_extras %}
+             
+{% block listboard_panel %}
+    <a id="download_files" title="Generate Data Export" class="btn btn-sm btn-default" role="button" 
+        href="{{ export_listboard_url }}?download=1">
+            <i class="fa fa-plus fa-sm"></i> Generate Data Export
+    </a>
+    <a id="return_to_home" title="go back" class="btn btn-sm btn-default" role="button" 
+        href="/">
+            <i class="fa fa-arrow-left fa-sm"></i> Go Back
+    </a>
+{% endblock listboard_panel %}
+
+{% block listboard_table_button_column %}
+{% endblock listboard_table_button_column %}
+
+{% block listboard_table_header %}
+    <!-- begin results header -->
+    <th>#</th>
+    <th>Export Identifier</th>
+    <th>Description</th>
+    <th>Download Export</th>
+    <th>Uploaded Date</th>
+    <th>User</th>
+    <!-- end results header -->
+{% endblock listboard_table_header %}
+
+
+{% block listboard_table_columns %}
+	<td>{{ result.export_identifier }} </td>
+	<td>{{ result.description }} </td>
+	<td><a href={{ result.file_url }}><i class="fa fa-download fa-sm"></i> file download</a></td>
+	<td>{{result.uploaded_at}}</td>
+    <td nowrap>{{ result.user_created }}</td>
+{% endblock listboard_table_columns %}
