@@ -31,9 +31,10 @@ class ExportNonCrfData:
             count = 0
             models_data = []
             for obj in objs:
-                data =  self.export_methods_cls.fix_date_format(self.export_methods_cls.non_crf_obj_dict(obj=obj))
-                models_data.append(data)
-                count += 1
+                if not obj.subject_identifier[-3:] == '-10':
+                    data =  self.export_methods_cls.fix_date_format(self.export_methods_cls.non_crf_obj_dict(obj=obj))
+                    models_data.append(data)
+                    count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_maternal_' + model_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
