@@ -1,23 +1,23 @@
 
 maternal_crfs_list = [
-#     'maternalultrasoundinitial',
-#     'maternalobstericalhistory',
-#     'maternalmedicalhistory',
-#     'maternaldemographics',
-#     'maternallifetimearvhistory',
-#     'maternalclinicalmeasurementsone',
-#     'maternalrando',
-#     'maternalinterimidcc',
-#     'maternalclinicalmeasurementstwo',
-#     'rapidtestresult',
-#     'maternaldiagnoses',
-#     'maternalsubstanceusepriorpreg',
-#     'maternalpostpartumdep',
-#     'maternalpostpartumfu',
-#     'maternalcontraception',
-#     'maternalsrh',
-#     'maternalsubstanceuseduringpreg',
-#     'maternalhivinterimhx',
+    'maternalultrasoundinitial',
+    'maternalobstericalhistory',
+    'maternalmedicalhistory',
+    'maternaldemographics',
+    'maternallifetimearvhistory',
+    'maternalclinicalmeasurementsone',
+    'maternalrando',
+    'maternalinterimidcc',
+    'maternalclinicalmeasurementstwo',
+    'rapidtestresult',
+    'maternaldiagnoses',
+    'maternalsubstanceusepriorpreg',
+    'maternalpostpartumdep',
+    'maternalpostpartumfu',
+    'maternalcontraception',
+    'maternalsrh',
+    'maternalsubstanceuseduringpreg',
+    'maternalhivinterimhx',
     'maternalarvpostadh']
 
 maternal_inlines_dict = {
@@ -70,8 +70,8 @@ infant_inlines_dict = {
             'infantarvproph': [['infantarvprophmod'], 'infant_arv_proph_id']}
 
 infant_many_to_many_crf = [
-            ['SolidFoodAssessment', 'solid_foods', 'Foods'],
-            ['SolidFoodAssessment', 'rations_receviced', 'Rations']
+            ['solidfoodassessment', 'solid_foods', 'Foods'],
+            ['solidfoodassessment', 'rations_receviced', 'Rations']
         ]
 
 maternal_model_list = [
@@ -85,6 +85,6 @@ maternal_many_to_many_crf = [
 
 infant_model_list = ['infantbirth']
 
-offstudy_prn_model_list = ['MaternalOffStudy', 'InfantOffStudy']
+offstudy_prn_model_list = ['maternaloffstudy', 'infantoffstudy']
 
-death_report_prn_model_list = ['MaternalDeathReport', 'InfantDeathReport']
+death_report_prn_model_list = ['maternaldeathreport', 'infantdeathreport']

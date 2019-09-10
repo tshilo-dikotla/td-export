@@ -39,16 +39,14 @@ class ExportFile(SiteModelMixin, SearchSlugModelMixin, BaseUuidModel):
     document = models.FileField(upload_to='documents/')
 
     uploaded_at = models.DateTimeField(auto_now_add=True)
-
-    export_date = models.DateField(auto_now=True, unique=True)
  
     def __str__(self):
         return f'{self.export_identifier}'
     
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.export_identifier = self.identifier_cls().identifier
-        super(ExportFile, self).save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         if not self.id:
+#             self.export_identifier = self.identifier_cls().identifier
+#         super(ExportFile, self).save(*args, **kwargs)
 
     def natural_key(self):
         return self.export_identifier

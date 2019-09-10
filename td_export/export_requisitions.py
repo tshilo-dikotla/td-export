@@ -10,7 +10,9 @@ class ExportRequisitionData:
     """Export data.
     """
     
-    def __init__(self):
+    def __init__(self, maternal_export_path=None, infant_export_path=None):
+        self.maternal_export_path = maternal_export_path or django_apps.get_app_config('td_export').maternal_path
+        self.infant_export_path = infant_export_path or django_apps.get_app_config('td_export').infant_path
         self.export_methods_cls = ExportMethods()
 
     def infant_requisitions(self):
@@ -33,10 +35,9 @@ class ExportRequisitionData:
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_infant_' + crf_name + '_' + timestamp + '.csv'
-            export_path = django_apps.get_app_config('td_export').infant_path
-            if not os.path.exists(export_path):
-                os.makedirs(export_path)
-            final_path = export_path + fname
+            if not os.path.exists(self.infant_export_path):
+                os.makedirs(self.infant_export_path)
+            final_path = self.infant_export_path + fname
             df_crf = pd.DataFrame(crf_data).rename_axis('#', axis=1)
             df_crf.to_csv(final_path, encoding='utf-8')
     
@@ -59,9 +60,8 @@ class ExportRequisitionData:
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_maternal_' + crf_name + '_' + timestamp + '.csv'
-            export_path = django_apps.get_app_config('td_export').maternal_path
-            if not os.path.exists(export_path):
-                os.system(f'mkdir {export_path}')
-            final_path = export_path + fname
+            if not os.path.exists(self.maternal_export_path):
+                os.makedirs(self.maternal_export_path)
+            final_path = self.maternal_export_path + fname
             df_crf = pd.DataFrame(crf_data).rename_axis('#', axis=1)
             df_crf.to_csv(final_path, encoding='utf-8')
