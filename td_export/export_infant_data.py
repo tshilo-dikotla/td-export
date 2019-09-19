@@ -33,8 +33,8 @@ class ExportInfantCrfData:
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_infant_' + crf_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
-            df_crf = pd.DataFrame(crf_data).rename_axis('#', axis=1)
-            df_crf.to_csv(final_path, encoding='utf-8')
+            df_crf = pd.DataFrame(crf_data)
+            df_crf.to_csv(final_path, encoding='utf-8', index=False)
 
     def export_infant_inline(self, infant_inlines_dict=None):
         """Export inline data.
@@ -70,8 +70,8 @@ class ExportInfantCrfData:
                 timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
                 fname = 'td_infant_' + crf_name + '_' + 'merged' '_' + inl + '_' + timestamp + '.csv'
                 final_path = self.export_path + fname
-                df_crf_inline = pd.DataFrame(mergered_data).rename_axis('#', axis=1)
-                df_crf_inline.to_csv(final_path, encoding='utf-8')
+                df_crf_inline = pd.DataFrame(mergered_data)
+                df_crf_inline.to_csv(final_path, encoding='utf-8', index=False)
 
     def infant_m2m_crf(self, infant_many_to_many_crf=None):
         # Export Infant Many-to-Many data
@@ -102,5 +102,5 @@ class ExportInfantCrfData:
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_maternal_' + crf_name + '_' + 'merged' '_' + mm_field + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
-            df_crf_inline = pd.DataFrame(mergered_data).rename_axis('#', axis=1)
-            df_crf_inline.to_csv(final_path, encoding='utf-8')
+            df_crf_inline = pd.DataFrame(mergered_data)
+            df_crf_inline.to_csv(final_path, encoding='utf-8', index=False)

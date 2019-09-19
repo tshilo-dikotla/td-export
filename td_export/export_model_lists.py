@@ -77,13 +77,13 @@ infant_many_to_many_crf = [
 maternal_model_list = [
             'registeredsubject', 'specimenconsent', 'maternallocator',
             'maternalcontact', 'subjectconsent', 'antenatalvisitmembership', 
-            'antenatalenrollment']
+            'antenatalenrollment', 'appointment']
 
 maternal_many_to_many_crf = [
             ['maternallabourdel', 'delivery_complications', 'deliverycomplications'],
         ]
 
-infant_model_list = ['infantbirth']
+infant_model_list = ['infantbirth', 'appointment']
 
 offstudy_prn_model_list = ['maternaloffstudy', 'infantoffstudy']
 

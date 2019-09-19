@@ -17,6 +17,7 @@ class ExportNonCrfData:
             os.makedirs(self.export_path)
         self.export_methods_cls = ExportMethods()
         self.rs_cls = django_apps.get_model('edc_registration.registeredsubject')
+        self.appointment_cls = django_apps.get_model('edc_appointment.appointment')
 
     def maternal_non_crfs(self, maternal_model_list=None):
         """E.
@@ -25,6 +26,8 @@ class ExportNonCrfData:
         for model_name in maternal_model_list:
             if 'registeredsubject' == model_name:
                 model_cls = self.rs_cls
+            elif 'appointment' == model_name:
+                model_cls = self.appointment_cls
             else:
                 model_cls = django_apps.get_model('td_maternal', model_name)
             objs = model_cls.objects.all()
@@ -38,8 +41,8 @@ class ExportNonCrfData:
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_maternal_' + model_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
-            df_crf = pd.DataFrame(models_data).rename_axis('#', axis=1)
-            df_crf.to_csv(final_path, encoding='utf-8')
+            df_crf = pd.DataFrame(models_data)
+            df_crf.to_csv(final_path, encoding='utf-8', index=False)
 
 
     def maternal_m2m_non_crf(self, maternal_many_to_many_crf=None):
@@ -72,8 +75,8 @@ class ExportNonCrfData:
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_maternal_' + crf_name + '_' + 'merged' '_' + mm_field + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
-            df_crf_inline = pd.DataFrame(mergered_data).rename_axis('#', axis=1)
-            df_crf_inline.to_csv(final_path, encoding='utf-8')
+            df_crf_inline = pd.DataFrame(mergered_data)
+            df_crf_inline.to_csv(final_path, encoding='utf-8', index=False)
 
 
     def infant_non_crf(self, infant_model_list=None):
@@ -108,10 +111,10 @@ class ExportNonCrfData:
                 models_data.append(last_data)
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-            fname = 'td_maternal_' + model_name + '_' + timestamp + '.csv'
+            fname = 'td_innfant_' + model_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
-            df_crf = pd.DataFrame(models_data).rename_axis('#', axis=1)
-            df_crf.to_csv(final_path, encoding='utf-8')
+            df_crf = pd.DataFrame(models_data)
+            df_crf.to_csv(final_path, encoding='utf-8', index=False)
         
     def offstudy(self, offstudy_prn_model_list=None):
         """Export off study forms.
@@ -147,8 +150,8 @@ class ExportNonCrfData:
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_prn_' + model_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
-            df_crf = pd.DataFrame(models_data).rename_axis('#', axis=1)
-            df_crf.to_csv(final_path, encoding='utf-8')
+            df_crf = pd.DataFrame(models_data)
+            df_crf.to_csv(final_path, encoding='utf-8', index=False)
 
     def death_report(self, death_report_prn_model_list=None):
         # Export Infant Non CRF data
@@ -183,8 +186,8 @@ class ExportNonCrfData:
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_prn_' + model_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
-            df_crf = pd.DataFrame(models_data).rename_axis('#', axis=1)
-            df_crf.to_csv(final_path, encoding='utf-8')
+            df_crf = pd.DataFrame(models_data)
+            df_crf.to_csv(final_path, encoding='utf-8', index=False)
 
     def maternal_visit(self):
 
@@ -197,8 +200,8 @@ class ExportNonCrfData:
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         fname = 'td_maternal_maternal_visit' + '_' + timestamp + '.csv'
         final_path = self.export_path + fname
-        df_crf = pd.DataFrame(data).rename_axis('#', axis=1)
-        df_crf.to_csv(final_path, encoding='utf-8')
+        df_crf = pd.DataFrame(data)
+        df_crf.to_csv(final_path, encoding='utf-8', index=False)
 
     def infant_visit(self):
 
@@ -209,7 +212,7 @@ class ExportNonCrfData:
             d = self.export_methods_cls.fix_date_format(d)
             data.append(d)
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-        fname = 'td_maternal_infant_visit' + '_' + timestamp + '.csv'
+        fname = 'td_infant_infant_visit' + '_' + timestamp + '.csv'
         final_path = self.export_path + fname
-        df_crf = pd.DataFrame(data).rename_axis('#', axis=1)
-        df_crf.to_csv(final_path, encoding='utf-8')
+        df_crf = pd.DataFrame(data)
+        df_crf.to_csv(final_path, encoding='utf-8', index=False)
