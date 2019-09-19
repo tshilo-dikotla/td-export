@@ -47,11 +47,6 @@ class ExportFile(SiteModelMixin, SearchSlugModelMixin, BaseUuidModel):
  
     def __str__(self):
         return f'{self.export_identifier}'
-    
-#     def save(self, *args, **kwargs):
-#         if not self.id:
-#             self.export_identifier = self.identifier_cls().identifier
-#         super(ExportFile, self).save(*args, **kwargs)
 
     def natural_key(self):
         return self.export_identifier
