@@ -25,6 +25,8 @@ from ..export_model_lists import (
     offstudy_prn_model_list)
 from ..models import ExportFile
 from ..identifiers import ExportIdentifier
+from django.core.exceptions import ValidationError
+
 
 
 class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
@@ -97,6 +99,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
     def download_all_data(self):
         """Export all data.
         """
+        start = time.clock()
         today_date = datetime.datetime.now().strftime('%Y%m%d')
         export_identifier = self.identifier_cls().identifier
         zipped_file_path = 'documents/' + export_identifier + '_td_export_' + today_date + '.zip'
@@ -107,10 +110,10 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
         
         export_path = dir_to_zip + '/infant/'
         self.export_infant_data(export_path=export_path)
-        
+         
         export_path = dir_to_zip + '/non_crf/'
         self.export_non_crf_data(export_path=export_path)
-        
+         
         maternal_export_path = dir_to_zip + '/maternal/'
         infant_export_path = dir_to_zip + '/infant/'
         self.export_requisitions(
@@ -130,9 +133,18 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
             doc.document = zipped_file_path
             doc.save()
 
+            end = time.clock()
+            downnload_time = end - start
+            try:
+                doc = ExportFile.objects.get(export_identifier=export_identifier)
+            except ExportFile.DoesNotExist:
+                raise ValidationError('Export file is missing for id: ', export_identifier)
+            else:
+                doc.downnload_time = downnload_time
+                doc.save()
             # Notify user the download is done
             self.request.user.email_user(
-                'td export', 'Tshilo Dikotla export files have been successfully generated and ready for download.')
+                'td export ' + export_identifier, 'Tshilo Dikotla export files have been successfully generated and ready for download.')
             threading.Thread(target=self.stop_main_thread)
             
 
@@ -140,6 +152,8 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
         context = super().get_context_data(**kwargs)
         download = self.request.GET.get('download')
         active_download = False
+        test = 1
+
         if download == '1':
             threads = threading.enumerate()
             threads = [t for t in threads if t.is_alive()]
@@ -153,12 +167,20 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
             if not active_download:
                 download_thread = threading.Thread(name='td_export', target=self.download_all_data)
                 download_thread.start()
-                 
-                messages.add_message(
-                        self.request, messages.INFO,
-                        ('Download initiated, you will receive an email once the download is completed.'))
+                last_doc = ExportFile.objects.all().order_by('created').last()
+                if last_doc:
+                    start_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                    last_doc_time = last_doc.downnload_time
+                    messages.add_message(
+                            self.request, messages.INFO,
+                            (f'Download initiated, you will receive an email once the download is completed. Estimated download time: {last_doc_time}, file generation started at: {start_time}'))
+                else:
+                    messages.add_message(
+                            self.request, messages.INFO,
+                            ('Download initiated, you will receive an email once the download is completed.'))
         context.update(
-            export_add_url=self.model_cls().get_absolute_url())
+            export_add_url=self.model_cls().get_absolute_url(), test=test,
+            )
         return context
 
     def get_queryset_filter_options(self, request, *args, **kwargs):
