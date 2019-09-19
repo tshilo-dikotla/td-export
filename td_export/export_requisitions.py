@@ -38,8 +38,8 @@ class ExportRequisitionData:
             if not os.path.exists(self.infant_export_path):
                 os.makedirs(self.infant_export_path)
             final_path = self.infant_export_path + fname
-            df_crf = pd.DataFrame(crf_data).rename_axis('#', axis=1)
-            df_crf.to_csv(final_path, encoding='utf-8')
+            df_crf = pd.DataFrame(crf_data)
+            df_crf.to_csv(final_path, encoding='utf-8', index=False)
     
     def maternal_requisitions(self):
         # Export Maternal Requisition data
@@ -63,5 +63,5 @@ class ExportRequisitionData:
             if not os.path.exists(self.maternal_export_path):
                 os.makedirs(self.maternal_export_path)
             final_path = self.maternal_export_path + fname
-            df_crf = pd.DataFrame(crf_data).rename_axis('#', axis=1)
-            df_crf.to_csv(final_path, encoding='utf-8')
+            df_crf = pd.DataFrame(crf_data)
+            df_crf.to_csv(final_path, encoding='utf-8', index=False)

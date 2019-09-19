@@ -35,8 +35,8 @@ class ExportMaternalCrfData:
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_maternal_' + crf_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
-            df_crf = pd.DataFrame(crf_data).rename_axis('#', axis=1)
-            df_crf.to_csv(final_path, encoding='utf-8')
+            df_crf = pd.DataFrame(crf_data)
+            df_crf.to_csv(final_path, encoding='utf-8', index=False)
 
 
     def export_maternal_inline_crfs(self, maternal_inlines_dict=None):
@@ -74,5 +74,5 @@ class ExportMaternalCrfData:
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_maternal_' + crf_name + '_' + 'merged' '_' + inline + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
-            df_crf_inline = pd.DataFrame(mergered_data).rename_axis('#', axis=1)
-            df_crf_inline.to_csv(final_path, encoding='utf-8')
+            df_crf_inline = pd.DataFrame(mergered_data)
+            df_crf_inline.to_csv(final_path, encoding='utf-8', index=False)

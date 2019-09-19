@@ -39,6 +39,11 @@ class ExportFile(SiteModelMixin, SearchSlugModelMixin, BaseUuidModel):
     document = models.FileField(upload_to='documents/')
 
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    downnload_time = models.DecimalField(
+        null=True,
+        max_digits=10,
+        decimal_places=2)
  
     def __str__(self):
         return f'{self.export_identifier}'
