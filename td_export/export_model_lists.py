@@ -2,7 +2,6 @@
 maternal_crfs_list = [
     'maternalultrasoundinitial',
     'maternalobstericalhistory',
-    'maternalmedicalhistory',
     'maternaldemographics',
     'maternallifetimearvhistory',
     'maternalclinicalmeasurementsone',
@@ -81,6 +80,10 @@ maternal_model_list = [
 
 maternal_many_to_many_crf = [
             ['maternallabourdel', 'delivery_complications', 'deliverycomplications'],
+            ['maternalmedicalhistory', 'who', 'wcsdxadult'],
+            ['maternalmedicalhistory', 'mother_chronic', 'chronicconditions'],
+            ['maternalmedicalhistory', 'father_chronic', 'chronicconditions'],
+            ['maternalmedicalhistory', 'mother_medications', 'maternalmedications'],
         ]
 
 infant_model_list = ['infantbirth', 'appointment']
