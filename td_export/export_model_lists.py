@@ -2,7 +2,6 @@
 maternal_crfs_list = [
     'maternalultrasoundinitial',
     'maternalobstericalhistory',
-    'maternalmedicalhistory',
     'maternaldemographics',
     'maternallifetimearvhistory',
     'maternalclinicalmeasurementsone',
@@ -77,10 +76,14 @@ infant_many_to_many_crf = [
 maternal_model_list = [
             'registeredsubject', 'specimenconsent', 'maternallocator',
             'maternalcontact', 'subjectconsent', 'antenatalvisitmembership', 
-            'antenatalenrollment', 'appointment']
+            'antenatalenrollment', 'appointment', 'subjectscreening']
 
 maternal_many_to_many_crf = [
             ['maternallabourdel', 'delivery_complications', 'deliverycomplications'],
+            ['maternalmedicalhistory', 'who', 'wcsdxadult'],
+            ['maternalmedicalhistory', 'mother_chronic', 'chronicconditions'],
+            ['maternalmedicalhistory', 'father_chronic', 'chronicconditions'],
+            ['maternalmedicalhistory', 'mother_medications', 'maternalmedications'],
         ]
 
 infant_model_list = ['infantbirth', 'appointment']

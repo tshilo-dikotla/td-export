@@ -170,10 +170,10 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
                 last_doc = ExportFile.objects.all().order_by('created').last()
                 if last_doc:
                     start_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-                    last_doc_time = last_doc.downnload_time
+                    last_doc_time = round(float(last_doc.downnload_time)/60.0, 2)
                     messages.add_message(
                             self.request, messages.INFO,
-                            (f'Download initiated, you will receive an email once the download is completed. Estimated download time: {last_doc_time}, file generation started at: {start_time}'))
+                            (f'Download initiated, you will receive an email once the download is completed. Estimated download time: {last_doc_time} minutes, file generation started at: {start_time}'))
                 else:
                     messages.add_message(
                             self.request, messages.INFO,
