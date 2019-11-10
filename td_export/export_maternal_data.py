@@ -76,3 +76,36 @@ class ExportMaternalCrfData:
             final_path = self.export_path + fname
             df_crf_inline = pd.DataFrame(mergered_data)
             df_crf_inline.to_csv(final_path, encoding='utf-8', index=False)
+            
+    def maternal_m2m_crf(self, maternal_many_to_many_crf=None):
+        """.
+        """
+        
+        for crf_infor in maternal_many_to_many_crf:
+            crf_name, mm_field, _ = crf_infor
+            crf_cls = django_apps.get_model('td_maternal', crf_name)
+            count = 0
+            mergered_data = []
+            crf_objs = crf_cls.objects.all()
+            for crf_obj in crf_objs:
+                mm_objs = getattr(crf_obj, mm_field).all()
+                if mm_objs:
+                    for mm_obj in mm_objs:
+                        mm_data = mm_obj.__dict__
+                        
+                        crfdata = self.export_methods_cls.maternal_crf_data_dict(crf_obj=crf_obj)
+                        
+                        # Merged many to many and CRF data
+                        data = self.export_methods_cls.fix_date_format({**crfdata, **mm_data})
+                        mergered_data.append(data)
+                        count += 1
+                else:
+                    crfdata =  self.export_methods_cls.fix_date_format(
+                        self.export_methods_cls.maternal_crf_data_dict(crf_obj=crf_obj))
+                    mergered_data.append(crfdata)
+                    count += 1
+            timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+            fname = 'td_maternal_' + crf_name + '_' + 'merged' '_' + mm_field + '_' + timestamp + '.csv'
+            final_path = self.export_path + fname
+            df_crf_many2many = pd.DataFrame(mergered_data)
+            df_crf_many2many.to_csv(final_path, encoding='utf-8', index=False)

@@ -45,11 +45,11 @@ class ExportNonCrfData:
             df_crf.to_csv(final_path, encoding='utf-8', index=False)
 
 
-    def maternal_m2m_non_crf(self, maternal_many_to_many_crf=None):
+    def maternal_m2m_non_crf(self, maternal_many_to_many_non_crf=None):
         """.
         """
         
-        for crf_infor in maternal_many_to_many_crf:
+        for crf_infor in maternal_many_to_many_non_crf:
             crf_name, mm_field, _ = crf_infor
             crf_cls = django_apps.get_model('td_maternal', crf_name)
             count = 0
@@ -75,8 +75,8 @@ class ExportNonCrfData:
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_maternal_' + crf_name + '_' + 'merged' '_' + mm_field + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
-            df_crf_inline = pd.DataFrame(mergered_data)
-            df_crf_inline.to_csv(final_path, encoding='utf-8', index=False)
+            df_crf_many2many = pd.DataFrame(mergered_data)
+            df_crf_many2many.to_csv(final_path, encoding='utf-8', index=False)
 
 
     def infant_non_crf(self, infant_model_list=None):

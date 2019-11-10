@@ -79,12 +79,13 @@ maternal_model_list = [
             'antenatalenrollment', 'appointment', 'subjectscreening']
 
 maternal_many_to_many_crf = [
-            ['maternallabourdel', 'delivery_complications', 'deliverycomplications'],
             ['maternalmedicalhistory', 'who', 'wcsdxadult'],
             ['maternalmedicalhistory', 'mother_chronic', 'chronicconditions'],
             ['maternalmedicalhistory', 'father_chronic', 'chronicconditions'],
             ['maternalmedicalhistory', 'mother_medications', 'maternalmedications'],
         ]
+maternal_many_to_many_non_crf = [
+    ['maternallabourdel', 'delivery_complications', 'deliverycomplications']]
 
 infant_model_list = ['infantbirth', 'appointment']
 
