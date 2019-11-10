@@ -22,7 +22,7 @@ from ..export_model_lists import (
     maternal_crfs_list, maternal_inlines_dict, infant_crf_list,
     infant_inlines_dict, infant_many_to_many_crf, infant_model_list,
     maternal_model_list, maternal_many_to_many_crf, death_report_prn_model_list,
-    offstudy_prn_model_list)
+    offstudy_prn_model_list, maternal_many_to_many_non_crf)
 from ..models import ExportFile
 from ..identifiers import ExportIdentifier
 from django.core.exceptions import ValidationError
@@ -56,6 +56,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
         crf_data = ExportMaternalCrfData(export_path=export_path)
         crf_data.matermal_crfs(maternal_crfs_list=maternal_crfs_list)
         crf_data.export_maternal_inline_crfs(maternal_inlines_dict=maternal_inlines_dict)
+        crf_data.maternal_m2m_crf(maternal_many_to_many_crf=maternal_many_to_many_crf)
 
     def export_infant_data(self, export_path=None):
         """Export infant data.
@@ -72,7 +73,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
         non_crf_data.infant_non_crf(infant_model_list=infant_model_list)
         non_crf_data.death_report(death_report_prn_model_list=death_report_prn_model_list)
         non_crf_data.maternal_non_crfs(maternal_model_list=maternal_model_list)
-        non_crf_data.maternal_m2m_non_crf(maternal_many_to_many_crf=maternal_many_to_many_crf)
+        non_crf_data.maternal_m2m_non_crf(maternal_many_to_many_non_crf=maternal_many_to_many_non_crf)
         non_crf_data.infant_visit()
         non_crf_data.maternal_visit()
         non_crf_data.offstudy(offstudy_prn_model_list=offstudy_prn_model_list)

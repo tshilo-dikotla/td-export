@@ -150,13 +150,13 @@ class ExportMethods:
         data = obj.__dict__
         data = self.encrypt_values(obj_dict=data, obj_cls=obj.__class__)
         subject_consent = self.subject_consent_csl.objects.filter(subject_identifier=obj.subject_identifier).last()
-        if not 'dob' in data:
-            data.update(dob=subject_consent.dob)
-        if not 'gender' in data:
-            data.update(gender=subject_consent.gender)
-        if not 'screening_identifier' in data:
-            data.update(screening_identifier=subject_consent.screening_identifier)
         if subject_consent:
+            if not 'dob' in data:
+                data.update(dob=subject_consent.dob)
+            if not 'gender' in data:
+                data.update(gender=subject_consent.gender)
+            if not 'screening_identifier' in data:
+                data.update(screening_identifier=subject_consent.screening_identifier)
             try:
                 subject_screening = self.subject_screening_csl.objects.get(
                     screening_identifier=subject_consent.screening_identifier)
@@ -167,14 +167,22 @@ class ExportMethods:
                     screening_age_in_years=subject_screening.age_in_years
                 )
         else:
+            if not 'screening_identifier' in data:
+                data.update(screening_identifier=None)
             data.update(
-                screening_age_in_years=None
+                screening_age_in_years=None,
+                dob=None,
+                gender=None,
+                
             )
         if not 'registration_datetime' in data:
             try:
                 rs = self.rs_cls.objects.get(subject_identifier=obj.subject_identifier)
             except self.rs_cls.DoesNotExist:
-                raise ValidationError('Registered subject can not be missing')
+                data.update(
+                    registration_datetime=None,
+                    screening_datetime=None
+                )
             else:
                 data.update(
                     registration_datetime=rs.registration_datetime,
