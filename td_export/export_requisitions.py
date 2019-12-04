@@ -21,7 +21,8 @@ class ExportRequisitionData:
         crf_list = [
             'infantrequisition',
         ]
-        
+        karabo_panels = [
+            'karabo_wb_pbmc_pl_panel', 'karabo_pbmc_pl_panel', 'infant_paxgene_panel']
         for crf_name in crf_list:
             crf_cls = django_apps.get_model('td_infant', crf_name)
             objs = crf_cls.objects.all()
@@ -31,6 +32,8 @@ class ExportRequisitionData:
                 data = self.export_methods_cls.fix_date_format(
                     self.export_methods_cls.infant_crf_data(crf_obj))
                 data.update(panel_name=crf_obj.panel.name)
+                if data['panel_name'] in karabo_panels:
+                    data.update(protocol_number='108')
                 crf_data.append(data)
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')

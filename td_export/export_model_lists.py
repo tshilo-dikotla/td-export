@@ -33,18 +33,8 @@ infant_crf_list = [
             'infantfu',
             'infantfuphysical',
             'infantfeeding',
-            'infantnvpadjustment']
-
-infant_crf_list = [
-            'infantbirthdata',
-            'infantbirthexam',
-            'infantbirthfeedingvaccine',
-            'infantbirtharv',
-            'infantnvpdispensing',
-            'infantfu',
-            'infantfuphysical',
-            'infantfeeding',
-            'infantnvpadjustment']
+            'infantnvpadjustment',
+            'karabooffstudy']
 
 infant_inlines_dict = {
             'infantcongenitalanomalies': [[
@@ -70,13 +60,19 @@ infant_inlines_dict = {
 
 infant_many_to_many_crf = [
             ['solidfoodassessment', 'solid_foods', 'Foods'],
-            ['solidfoodassessment', 'rations_receviced', 'Rations']
+            ['solidfoodassessment', 'rations_receviced', 'Rations'],
+            ['karabotuberculosishistory', 'coughing_rel', 'CoughingRelation'],
+            ['karabotuberculosishistory', 'fever_rel', 'FeverRelation'],
+            ['karabotuberculosishistory', 'weight_loss_rel', 'WeightLossRelation'],
+            ['karabotuberculosishistory', 'night_sweats_rel', 'NightSweatsRelation'],
+            ['karabotuberculosishistory', 'diagnosis_rel', 'DiagnosisRelation'],
         ]
 
 maternal_model_list = [
             'registeredsubject', 'specimenconsent', 'maternallocator',
             'maternalcontact', 'subjectconsent', 'antenatalvisitmembership', 
-            'antenatalenrollment', 'appointment', 'subjectscreening']
+            'antenatalenrollment', 'appointment', 'subjectscreening', 'karabosubjectscreening',
+            'karabosubjectconsent']
 
 maternal_many_to_many_crf = [
             ['maternalmedicalhistory', 'who', 'wcsdxadult'],
