@@ -1,3 +1,4 @@
+import re
 import datetime
 from pytz import timezone
 from django.apps import apps as django_apps
@@ -48,7 +49,9 @@ class ExportMethods:
                 time_value = value.time().strftime('%H:%M:%S.%f')
                 time_variable = key + '_time'
                 value = value.strftime('%m/%d/%Y')
-                result_dict_obj[key] = value
+                new_key = re.sub('time', '', key)
+                result_dict_obj[new_key] = value
+                del result_dict_obj[key]
                 result_dict_obj[time_variable] = time_value
             elif isinstance(value, datetime.date):
                 value = value.strftime('%m/%d/%Y')

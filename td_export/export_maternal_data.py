@@ -4,6 +4,7 @@ from django.apps import apps as django_apps
 
 
 from .export_methods import ExportMethods
+from .export_model_lists import exclude_fields
 
 
 class ExportMaternalCrfData:
@@ -30,6 +31,11 @@ class ExportMaternalCrfData:
                     crf_obj=crf_obj)
                 data = self.export_methods_cls.fix_date_format(
                     obj_dict=temp_data)
+                for e_fields in exclude_fields:
+                    try:
+                        del data[e_fields]
+                    except KeyError:
+                        pass
                 crf_data.append(data)
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -63,12 +69,22 @@ class ExportMaternalCrfData:
                         
                         # Merged inline and CRF data
                         data = self.export_methods_cls.fix_date_format(obj_dict={**crfdata, **in_data})
+                        for e_fields in exclude_fields:
+                            try:
+                                del data[e_fields]
+                            except KeyError:
+                                pass
                         mergered_data.append(data)
                         count += 1
                 else:
                     temp_data = self.export_methods_cls.maternal_crf_data_dict(
                         crf_obj=crf_obj)
                     crfdata = self.export_methods_cls.fix_date_format(obj_dict=temp_data)
+                    for e_fields in exclude_fields:
+                        try:
+                            del crfdata[e_fields]
+                        except KeyError:
+                            pass
                     mergered_data.append(crfdata)
                     count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -97,11 +113,21 @@ class ExportMaternalCrfData:
                         
                         # Merged many to many and CRF data
                         data = self.export_methods_cls.fix_date_format({**crfdata, **mm_data})
+                        for e_fields in exclude_fields:
+                            try:
+                                del data[e_fields]
+                            except KeyError:
+                                pass
                         mergered_data.append(data)
                         count += 1
                 else:
                     crfdata =  self.export_methods_cls.fix_date_format(
                         self.export_methods_cls.maternal_crf_data_dict(crf_obj=crf_obj))
+                    for e_fields in exclude_fields:
+                        try:
+                            del crfdata[e_fields]
+                        except KeyError:
+                            pass
                     mergered_data.append(crfdata)
                     count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')

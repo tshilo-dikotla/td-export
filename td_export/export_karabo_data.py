@@ -4,6 +4,7 @@ from django.apps import apps as django_apps
 
 
 from .export_methods import ExportMethods
+from .export_model_lists import exclude_fields
 
 
 class ExportKaraboData:
@@ -45,13 +46,18 @@ class ExportKaraboData:
                             count += 1
                             if count < mm_objs.count():
                                 mm_data += '~'
-                        data = self.export_methods_cls.fix_date_format({**crfdata, **mm_data})
+                        data = self.export_methods_cls.fix_date_format({**crfdata})
                         data[mm_field_name] = mm_data
                         mergered_data.append(data)
                         count += 1
                     else:
-                        data = self.export_methods_cls.fix_date_format({**crfdata, **mm_data})
+                        data = self.export_methods_cls.fix_date_format({**crfdata})
                         data[mm_field_name] = None
+                        for e_fields in exclude_fields:
+                            try:
+                                del data[e_fields]
+                            except KeyError:
+                                pass
                         mergered_data.append(data)
                         count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
