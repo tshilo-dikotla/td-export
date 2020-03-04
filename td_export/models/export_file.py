@@ -34,6 +34,8 @@ class ExportFile(SiteModelMixin, SearchSlugModelMixin, BaseUuidModel):
         unique=True,
         editable=False)
 
+    study = models.CharField(max_length=100, blank=True)
+
     description = models.CharField(max_length=255, blank=True)
 
     document = models.FileField(upload_to='documents/')

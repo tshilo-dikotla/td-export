@@ -11,9 +11,13 @@
 {% endblock extra-scripts %}
              
 {% block listboard_panel %}
-    <a id="download_files" title="Generate Data Export" class="btn btn-sm btn-default" role="button" 
+    <a id="download_files" title="Generate all Export" class="btn btn-sm btn-default" role="button" 
         href="{{ export_listboard_url }}?download=1">
-            <i class="fa fa-plus fa-sm"></i> Generate Data Export
+            <i class="fa fa-plus fa-sm"></i> Generate all Export
+    </a>
+    <a id="download_files" title="Generate karabo Export" class="btn btn-sm btn-default" role="button" 
+        href="{{ export_listboard_url }}?download=2">
+            <i class="fa fa-plus fa-sm"></i> Generate karabo Export
     </a>
     <a id="return_to_home" title="go back" class="btn btn-sm btn-default" role="button" 
         href="/">
@@ -30,6 +34,7 @@
     <th>#</th>
     <th>Export Identifier</th>
     <th>Description</th>
+    <th>study</th>
     <th>Download Export</th>
     <th>Uploaded Date</th>
     <th>Estimated File Preparation Time (Minutes)</th>
@@ -41,6 +46,7 @@
 {% block listboard_table_columns %}
 	<td>{{ result.export_identifier }} </td>
 	<td>{{ result.description }} </td>
+	<td>{{ result.study }} </td>
 	<td><a href={{ result.file_url }}><i class="fa fa-download fa-sm"></i> file download</a></td>
 	<td>{{result.uploaded_at}}</td>
 	<td>{{result.files_generation_time}}</td>

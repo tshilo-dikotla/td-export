@@ -1,3 +1,8 @@
+exclude_fields = [
+            'created', '_state', 'hostname_created', 'hostname_modified', 'revision',
+            'device_created', 'device_modified', 'id', 'site_id', 'created_time',
+            'modified_time', 'report_datetime_time', 'registration_datetime_time',
+            'screening_datetime_time', 'modified']
 
 maternal_crfs_list = [
     'maternalultrasoundinitial',
@@ -36,6 +41,8 @@ infant_crf_list = [
             'infantnvpadjustment',
             'karabooffstudy']
 
+karabo_infant_crf_list = ['karabooffstudy']
+
 infant_inlines_dict = {
             'infantcongenitalanomalies': [[
                 'infantcns',
@@ -73,6 +80,8 @@ maternal_model_list = [
             'maternalcontact', 'subjectconsent', 'antenatalvisitmembership', 
             'antenatalenrollment', 'appointment', 'subjectscreening', 'karabosubjectscreening',
             'karabosubjectconsent']
+
+karabo_maternal_model_list = ['karabosubjectscreening', 'karabosubjectconsent']
 
 maternal_many_to_many_crf = [
             ['maternalmedicalhistory', 'who', 'wcsdxadult'],
