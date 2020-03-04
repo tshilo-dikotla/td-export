@@ -1,10 +1,11 @@
 import pandas as pd, datetime, os
 
 from django.apps import apps as django_apps
-
+from django.core.exceptions import ValidationError
 
 from .export_methods import ExportMethods
-from django.core.exceptions import ValidationError
+from .export_model_lists import exclude_fields
+
 
 
 class ExportNonCrfData:
@@ -36,6 +37,11 @@ class ExportNonCrfData:
             for obj in objs:
                 if not obj.subject_identifier[-3:] == '-10':
                     data =  self.export_methods_cls.fix_date_format(self.export_methods_cls.non_crf_obj_dict(obj=obj))
+                    for e_fields in exclude_fields:
+                        try:
+                            del data[e_fields]
+                        except KeyError:
+                            pass
                     models_data.append(data)
                     count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -65,11 +71,21 @@ class ExportNonCrfData:
                         
                         # Merged many to many and CRF data
                         data = self.export_methods_cls.fix_date_format({**crfdata, **mm_data})
+                        for e_fields in exclude_fields:
+                            try:
+                                del data[e_fields]
+                            except KeyError:
+                                pass
                         mergered_data.append(data)
                         count += 1
                 else:
                     crfdata =  self.export_methods_cls.fix_date_format(
                         self.export_methods_cls.non_crf_obj_dict(obj=crf_obj))
+                    for e_fields in exclude_fields:
+                        try:
+                            del crfdata[e_fields]
+                        except KeyError:
+                            pass
                     mergered_data.append(crfdata)
                     count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -108,6 +124,11 @@ class ExportNonCrfData:
                         registration_datetime=rs.registration_datetime
                     )
                 last_data = self.export_methods_cls.fix_date_format(data)
+                for e_fields in exclude_fields:
+                    try:
+                        del last_data[e_fields]
+                    except KeyError:
+                        pass
                 models_data.append(last_data)
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -145,6 +166,11 @@ class ExportNonCrfData:
                         registration_datetime=rs.registration_datetime
                     )
                 last_data = self.export_methods_cls.fix_date_format(data)
+                for e_fields in exclude_fields:
+                    try:
+                        del last_data[e_fields]
+                    except KeyError:
+                        pass
                 models_data.append(last_data)
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -181,6 +207,11 @@ class ExportNonCrfData:
                     )
                 data = self.export_methods_cls.encrypt_values(data, obj.__class__)
                 last_data = self.export_methods_cls.fix_date_format(data)
+                for e_fields in exclude_fields:
+                    try:
+                        del last_data[e_fields]
+                    except KeyError:
+                        pass
                 models_data.append(last_data)
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -197,6 +228,11 @@ class ExportNonCrfData:
             d = mv.__dict__
             d = self.export_methods_cls.fix_date_format(d)
             data.append(d)
+        for e_fields in exclude_fields:
+            try:
+                del data[e_fields]
+            except KeyError:
+                pass
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         fname = 'td_maternal_maternal_visit' + '_' + timestamp + '.csv'
         final_path = self.export_path + fname
@@ -211,6 +247,11 @@ class ExportNonCrfData:
             d = mv.__dict__
             d = self.export_methods_cls.fix_date_format(d)
             data.append(d)
+        for e_fields in exclude_fields:
+            try:
+                del data[e_fields]
+            except KeyError:
+                pass
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         fname = 'td_infant_infant_visit' + '_' + timestamp + '.csv'
         final_path = self.export_path + fname
