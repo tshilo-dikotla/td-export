@@ -227,12 +227,12 @@ class ExportNonCrfData:
         for mv in maternal_visits:
             d = mv.__dict__
             d = self.export_methods_cls.fix_date_format(d)
+            for e_fields in exclude_fields:
+                try:
+                    del data[e_fields]
+                except KeyError:
+                    pass
             data.append(d)
-        for e_fields in exclude_fields:
-            try:
-                del data[e_fields]
-            except KeyError:
-                pass
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         fname = 'td_maternal_maternal_visit' + '_' + timestamp + '.csv'
         final_path = self.export_path + fname
@@ -246,12 +246,12 @@ class ExportNonCrfData:
         for mv in infant_visits:
             d = mv.__dict__
             d = self.export_methods_cls.fix_date_format(d)
+            for e_fields in exclude_fields:
+                try:
+                    del d[e_fields]
+                except KeyError:
+                    pass
             data.append(d)
-        for e_fields in exclude_fields:
-            try:
-                del data[e_fields]
-            except KeyError:
-                pass
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         fname = 'td_infant_infant_visit' + '_' + timestamp + '.csv'
         final_path = self.export_path + fname

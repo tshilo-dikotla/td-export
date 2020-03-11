@@ -212,6 +212,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
                             self.request, messages.INFO,
                                 ('Download that was initiated is still running please wait until an export is fully prepared.'))
             if not active_download:
+                print('I am about to download ***************')
                 download_thread = threading.Thread(name='td_export', target=self.download_all_data)
                 download_thread.start()
                 last_doc = ExportFile.objects.all().order_by('created').last()
