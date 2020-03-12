@@ -1,6 +1,7 @@
 import datetime, os, re, time, threading, shutil
 from django.conf import settings
 from django.contrib import messages
+from django.core.mail import send_mail
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -138,9 +139,16 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
             else:
                 doc.downnload_time = downnload_time
                 doc.save()
+
             # Notify user the download is done
-            self.request.user.email_user(
-                study + ' ' + export_identifier, 'export files have been successfully generated and ready for download.')
+            subject = study + ' ' + export_identifier + ' Export'
+            message = study + ' ' + export_identifier + ' export files have been successfully generated and ready for download. This is an automated message.'
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER, #FROM 
+                [self.request.user.email], #TO
+                fail_silently=False)
             threading.Thread(target=self.stop_main_thread)
 
     def download_karabo_data(self):
@@ -152,9 +160,6 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
         zipped_file_path = 'documents/' + export_identifier + '_karabo_export_' + today_date + '.zip'
         dir_to_zip = settings.MEDIA_ROOT + '/documents/' + export_identifier + '_karabo_export_' + today_date
                 
-#         export_path = dir_to_zip + '/maternal/'
-#         self.export_maternal_data(export_path=export_path)
-        
         export_path = dir_to_zip + '/infant/'
         self.export_karabo_infant_data(export_path=export_path)
          
@@ -212,7 +217,6 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
                             self.request, messages.INFO,
                                 ('Download that was initiated is still running please wait until an export is fully prepared.'))
             if not active_download:
-                print('I am about to download ***************')
                 download_thread = threading.Thread(name='td_export', target=self.download_all_data)
                 download_thread.start()
                 last_doc = ExportFile.objects.filter(study='tshilo dikotla').order_by('created').last()
