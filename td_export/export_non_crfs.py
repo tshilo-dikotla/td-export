@@ -229,7 +229,7 @@ class ExportNonCrfData:
             d = self.export_methods_cls.fix_date_format(d)
             for e_fields in exclude_fields:
                 try:
-                    del data[e_fields]
+                    del d[e_fields]
                 except KeyError:
                     pass
             data.append(d)

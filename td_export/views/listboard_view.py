@@ -215,7 +215,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
                 print('I am about to download ***************')
                 download_thread = threading.Thread(name='td_export', target=self.download_all_data)
                 download_thread.start()
-                last_doc = ExportFile.objects.all().order_by('created').last()
+                last_doc = ExportFile.objects.filter(study='tshilo dikotla').order_by('created').last()
                 if last_doc:
                     start_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                     last_doc_time = round(float(last_doc.downnload_time)/60.0, 2)
@@ -239,7 +239,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
             if not active_download:
                 download_thread = threading.Thread(name='karabo_export', target=self.download_karabo_data)
                 download_thread.start()
-                last_doc = ExportFile.objects.all().order_by('created').last()
+                last_doc = ExportFile.objects.filter(study='karabo').order_by('created').last()
                 if last_doc:
                     start_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                     last_doc_time = round(float(last_doc.downnload_time)/60.0, 2)
