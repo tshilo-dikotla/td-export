@@ -40,6 +40,8 @@ class ExportRequisitionData:
                         del data[e_fields]
                     except KeyError:
                         pass
+                del data['drawn_datetime']
+                del data['received_datetime']
                 crf_data.append(data)
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -70,6 +72,8 @@ class ExportRequisitionData:
                         del data[e_fields]
                     except KeyError:
                         pass
+                del data['drawn_datetime']
+                del data['received_datetime']
                 crf_data.append(data)
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')

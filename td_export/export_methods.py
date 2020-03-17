@@ -47,7 +47,11 @@ class ExportMethods:
             if isinstance(value, datetime.datetime):
                 value = value.astimezone(timezone('Africa/Gaborone'))
                 time_value = value.time().strftime('%H:%M:%S.%f')
-                time_variable = key + '_time'
+                time_variable = None
+                if 'datetime' in key:
+                    time_variable = re.sub('datetime', 'time', key)
+                else:
+                    time_variable = key + '_time'
                 value = value.strftime('%m/%d/%Y')
                 new_key = re.sub('time', '', key)
                 result_dict_obj[new_key] = value
