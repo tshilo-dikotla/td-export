@@ -2,7 +2,9 @@ exclude_fields = [
             'created', '_state', 'hostname_created', 'hostname_modified', 'revision',
             'device_created', 'device_modified', 'id', 'site_id', 'created_time',
             'modified_time', 'report_datetime_time', 'registration_datetime_time',
-            'screening_datetime_time', 'modified']
+            'screening_datetime_time', 'modified', 'form_as_json', 'consent_model',
+            'randomization_datetime', 'registration_datetime', 'is_verified_datetime',
+            'is_verified_date']
 
 maternal_crfs_list = [
     'maternalultrasoundinitial',
