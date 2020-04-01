@@ -1,23 +1,19 @@
-import pandas as pd, datetime, os
-
 from django.apps import apps as django_apps
-
+import pandas as pd, datetime, os
 
 from .export_methods import ExportMethods
 from .export_model_lists import exclude_fields
 
 
 class ExportKaraboData:
-    """Export data.
-    """
-    
+    """Export data."""
+
     def __init__(self, export_path=None):
         self.export_path = export_path or django_apps.get_app_config('td_export').maternal_path
         if not os.path.exists(self.export_path):
             os.makedirs(self.export_path)
         self.export_methods_cls = ExportMethods()
-    
-    
+
     def infant_karabo_m2m_crf(self):
         # Export Infant Many-to-Many data
         karabo_crfs_dict = {
@@ -27,7 +23,7 @@ class ExportKaraboData:
                 'weight_loss_rel',
                 'night_sweats_rel',
                 'diagnosis_rel', ]
-            }
+        }
         for crf_name, field_model in karabo_crfs_dict.items():
             crf_cls = django_apps.get_model('td_infant', crf_name)
             count = 0
