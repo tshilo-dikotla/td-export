@@ -1,12 +1,13 @@
-import re
 import datetime
-from pytz import timezone
+
 from django.apps import apps as django_apps
 from django.core.exceptions import ValidationError
-
 from django_crypto_fields.fields import (
     EncryptedCharField, EncryptedDecimalField, EncryptedIntegerField,
     EncryptedTextField, FirstnameField, IdentityField, LastnameField)
+from pytz import timezone
+import re
+
 encrypted_fields = [
     EncryptedCharField, EncryptedDecimalField, EncryptedIntegerField,
     EncryptedTextField, FirstnameField, IdentityField, LastnameField]
@@ -15,7 +16,7 @@ encrypted_fields = [
 class ExportMethods:
     """Export Tshilo Dikotla data.
     """
-    
+
     def __init__(self):
         self.antenatal_enrollment_cls = django_apps.get_model('td_maternal.antenatalenrollment')
         self.rs_cls = django_apps.get_model('edc_registration.registeredsubject')
@@ -33,12 +34,11 @@ class ExportMethods:
                     new_value = f.field_cryptor.encrypt(value)
                     result_dict_obj[key] = new_value
         return result_dict_obj
-    
 
     def fix_date_format(self, obj_dict=None):
         """Change all dates into a format for the export
         and split the time into a separate value.
-        
+
         Format: m/d/y
         """
 
@@ -69,7 +69,7 @@ class ExportMethods:
         data = crf_obj.__dict__
         data = self.encrypt_values(obj_dict=data, obj_cls=crf_obj.__class__)
         data.update(
-            subject_identifier=crf_obj.maternal_visit.subject_identifier,
+            maternal_subject_identifier=crf_obj.maternal_visit.subject_identifier,
             visit_datetime=crf_obj.maternal_visit.report_datetime,
             last_alive_date=crf_obj.maternal_visit.last_alive_date,
             reason=crf_obj.maternal_visit.reason,
@@ -115,7 +115,6 @@ class ExportMethods:
                 )
         return data
 
-
     def infant_crf_data(self, crf_obj=None):
         """Return a dictionary for a crf object with additional participant information.
         """
@@ -123,7 +122,7 @@ class ExportMethods:
         data = crf_obj.__dict__
         data = self.encrypt_values(obj_dict=data, obj_cls=crf_obj.__class__)
         data.update(
-            subject_identifier=crf_obj.infant_visit.subject_identifier,
+            infant_subject_identifier=crf_obj.infant_visit.subject_identifier,
             visit_datetime=crf_obj.infant_visit.report_datetime,
             last_alive_date=crf_obj.infant_visit.last_alive_date,
             reason=crf_obj.infant_visit.reason,
@@ -158,11 +157,11 @@ class ExportMethods:
         data = self.encrypt_values(obj_dict=data, obj_cls=obj.__class__)
         subject_consent = self.subject_consent_csl.objects.filter(subject_identifier=obj.subject_identifier).last()
         if subject_consent:
-            if not 'dob' in data:
+            if 'dob' not in data:
                 data.update(dob=subject_consent.dob)
-            if not 'gender' in data:
+            if 'gender' in data:
                 data.update(gender=subject_consent.gender)
-            if not 'screening_identifier' in data:
+            if 'screening_identifier' not in data:
                 data.update(screening_identifier=subject_consent.screening_identifier)
             try:
                 subject_screening = self.subject_screening_csl.objects.get(
@@ -174,15 +173,15 @@ class ExportMethods:
                     screening_age_in_years=subject_screening.age_in_years
                 )
         else:
-            if not 'screening_identifier' in data:
+            if 'screening_identifier' not in data:
                 data.update(screening_identifier=None)
             data.update(
                 screening_age_in_years=None,
                 dob=None,
                 gender=None,
-                
+
             )
-        if not 'registration_datetime' in data:
+        if 'registration_datetime' not in data:
             try:
                 rs = self.rs_cls.objects.get(subject_identifier=obj.subject_identifier)
             except self.rs_cls.DoesNotExist:

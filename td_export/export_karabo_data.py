@@ -33,6 +33,18 @@ class ExportKaraboData:
                 crfdata = self.export_methods_cls.infant_crf_data(crf_obj)
                 for mm_field_name in field_model:
 
+                    if mm_field_name == 'subject_identifier':
+                        mm_field_name = 'infant_subject_identifier'
+
+                    data = self.export_methods_cls.fix_date_format({**crfdata})
+                    exclude_fields.append('study_status')
+                    for e_field in exclude_fields:
+                        try:
+                            del data[e_field]
+                        except KeyError:
+                            pass
+                    data[mm_field_name] = None
+
                     mm_objs = getattr(crf_obj, mm_field_name).all()
                     mm_data = ''
                     if mm_objs:
@@ -42,22 +54,12 @@ class ExportKaraboData:
                             count += 1
                             if count < mm_objs.count():
                                 mm_data += '~'
-                        data = self.export_methods_cls.fix_date_format({**crfdata})
                         data[mm_field_name] = mm_data
-                        mergered_data.append(data)
-                        count += 1
-                    else:
-                        data = self.export_methods_cls.fix_date_format({**crfdata})
-                        data[mm_field_name] = None
-                        for e_fields in exclude_fields:
-                            try:
-                                del data[e_fields]
-                            except KeyError:
-                                pass
-                        mergered_data.append(data)
-                        count += 1
+
+                    mergered_data.append(data)
+                    count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-            fname = 'td_maternal_' + crf_name + '_' + timestamp + '.csv'
+            fname = 'td_infant_' + crf_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
             df_crf_inline = pd.DataFrame(mergered_data)
             df_crf_inline.to_csv(final_path, encoding='utf-8', index=False)
