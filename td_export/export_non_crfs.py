@@ -1,17 +1,15 @@
-import pandas as pd, datetime, os
-
 from django.apps import apps as django_apps
 from django.core.exceptions import ValidationError
+import pandas as pd, datetime, os
 
 from .export_methods import ExportMethods
 from .export_model_lists import exclude_fields
 
 
-
 class ExportNonCrfData:
     """Export data.
     """
-    
+
     def __init__(self, export_path=None):
         self.export_path = export_path or django_apps.get_app_config('td_export').non_crf_path
         if not os.path.exists(self.export_path):
@@ -23,7 +21,7 @@ class ExportNonCrfData:
     def maternal_non_crfs(self, maternal_model_list=None):
         """E.
         """
-        
+
         for model_name in maternal_model_list:
             if 'registeredsubject' == model_name:
                 model_cls = self.rs_cls
@@ -36,7 +34,7 @@ class ExportNonCrfData:
             models_data = []
             for obj in objs:
                 if not obj.subject_identifier[-3:] == '-10':
-                    data =  self.export_methods_cls.fix_date_format(self.export_methods_cls.non_crf_obj_dict(obj=obj))
+                    data = self.export_methods_cls.fix_date_format(self.export_methods_cls.non_crf_obj_dict(obj=obj))
                     for e_fields in exclude_fields:
                         try:
                             del data[e_fields]
@@ -48,13 +46,13 @@ class ExportNonCrfData:
             fname = 'td_maternal_' + model_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
             df_crf = pd.DataFrame(models_data)
+            df_crf.rename(columns={'subject_identifier':'maternal_subject_identifier'}, inplace=True)
             df_crf.to_csv(final_path, encoding='utf-8', index=False)
-
 
     def maternal_m2m_non_crf(self, maternal_many_to_many_non_crf=None):
         """.
         """
-        
+
         for crf_infor in maternal_many_to_many_non_crf:
             crf_name, mm_field, _ = crf_infor
             crf_cls = django_apps.get_model('td_maternal', crf_name)
@@ -66,9 +64,9 @@ class ExportNonCrfData:
                 if mm_objs:
                     for mm_obj in mm_objs:
                         mm_data = mm_obj.__dict__
-                        
+
                         crfdata = self.export_methods_cls.non_crf_obj_dict(obj=crf_obj)
-                        
+
                         # Merged many to many and CRF data
                         data = self.export_methods_cls.fix_date_format({**crfdata, **mm_data})
                         for e_fields in exclude_fields:
@@ -79,7 +77,7 @@ class ExportNonCrfData:
                         mergered_data.append(data)
                         count += 1
                 else:
-                    crfdata =  self.export_methods_cls.fix_date_format(
+                    crfdata = self.export_methods_cls.fix_date_format(
                         self.export_methods_cls.non_crf_obj_dict(obj=crf_obj))
                     for e_fields in exclude_fields:
                         try:
@@ -94,11 +92,10 @@ class ExportNonCrfData:
             df_crf_many2many = pd.DataFrame(mergered_data)
             df_crf_many2many.to_csv(final_path, encoding='utf-8', index=False)
 
-
     def infant_non_crf(self, infant_model_list=None):
         """.
         """
-        
+
         for model_name in infant_model_list:
             model_cls = django_apps.get_model('td_infant', model_name)
             objs = model_cls.objects.all()
@@ -136,11 +133,11 @@ class ExportNonCrfData:
             final_path = self.export_path + fname
             df_crf = pd.DataFrame(models_data)
             df_crf.to_csv(final_path, encoding='utf-8', index=False)
-        
+
     def offstudy(self, offstudy_prn_model_list=None):
         """Export off study forms.
         """
-        
+
         for model_name in offstudy_prn_model_list:
             model_cls = django_apps.get_model('td_prn', model_name)
             objs = model_cls.objects.all()
@@ -181,7 +178,7 @@ class ExportNonCrfData:
 
     def death_report(self, death_report_prn_model_list=None):
         # Export Infant Non CRF data
-        
+
         for model_name in death_report_prn_model_list:
             model_cls = django_apps.get_model('td_prn', model_name)
             objs = model_cls.objects.all()
