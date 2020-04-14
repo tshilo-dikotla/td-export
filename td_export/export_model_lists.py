@@ -4,10 +4,9 @@ exclude_fields = [
     'modified_time', 'report_datetime_time', 'registration_datetime_time',
     'screening_datetime_time', 'modified', 'form_as_json', 'consent_model',
     'randomization_datetime', 'registration_datetime', 'is_verified_datetime',
-    'is_verified_date', 'first_name', 'last_name', 'initials', 'guardian_name',
-    'identity', 'infant_visit_id', 'maternal_visit_id',
-    'processed', 'processed_datetime', 'packed', 'packed_datetime', 'shipped',
-    'shipped_datetime']
+    'first_name', 'last_name', 'initials', 'guardian_name', 'identity',
+    'infant_visit_id', 'maternal_visit_id', 'processed', 'processed_datetime',
+    'packed', 'packed_datetime', 'shipped', 'shipped_datetime']
 
 maternal_crfs_list = [
     'maternalultrasoundinitial',
