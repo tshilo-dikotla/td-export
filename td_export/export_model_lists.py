@@ -6,7 +6,9 @@ exclude_fields = [
     'randomization_datetime', 'registration_datetime', 'is_verified_datetime',
     'first_name', 'last_name', 'initials', 'guardian_name', 'identity',
     'infant_visit_id', 'maternal_visit_id', 'processed', 'processed_datetime',
-    'packed', 'packed_datetime', 'shipped', 'shipped_datetime']
+    'packed', 'packed_datetime', 'shipped', 'shipped_datetime',
+    'received_datetime', 'identifier_prefix', 'primary_aliquot_identifier',
+    'clinic_verified', 'clinic_verified_datetime', 'drawn_datetime']
 
 maternal_crfs_list = [
     'maternalultrasoundinitial',

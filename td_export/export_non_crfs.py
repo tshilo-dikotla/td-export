@@ -18,7 +18,7 @@ class ExportNonCrfData:
         self.rs_cls = django_apps.get_model('edc_registration.registeredsubject')
         self.appointment_cls = django_apps.get_model('edc_appointment.appointment')
 
-    def maternal_non_crfs(self, maternal_model_list=None):
+    def maternal_non_crfs(self, maternal_model_list=None, exclude=None):
         """E.
         """
 
@@ -35,6 +35,9 @@ class ExportNonCrfData:
             for obj in objs:
                 if not obj.subject_identifier[-3:] == '-10':
                     data = self.export_methods_cls.fix_date_format(self.export_methods_cls.non_crf_obj_dict(obj=obj))
+                    if exclude:
+                        exclude_fields.append(exclude)
+
                     for e_fields in exclude_fields:
                         try:
                             del data[e_fields]
