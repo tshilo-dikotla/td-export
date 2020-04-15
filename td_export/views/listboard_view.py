@@ -77,7 +77,8 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
         """Export both infant and maternal non CFR data.
         """
         non_crf_data = ExportNonCrfData(export_path=export_path)
-        non_crf_data.maternal_non_crfs(maternal_model_list=karabo_maternal_model_list)
+        non_crf_data.maternal_non_crfs(maternal_model_list=karabo_maternal_model_list,
+                                       exclude='ineligibility')
 
     def export_non_crf_data(self, export_path=None):
         """Export both infant and maternal non CFR data.

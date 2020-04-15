@@ -31,12 +31,13 @@ class ExportKaraboData:
             crf_objs = crf_cls.objects.all()
             for crf_obj in crf_objs:
                 crfdata = self.export_methods_cls.infant_crf_data(crf_obj)
+                data = self.export_methods_cls.fix_date_format({**crfdata})
+
                 for mm_field_name in field_model:
 
                     if mm_field_name == 'subject_identifier':
                         mm_field_name = 'infant_subject_identifier'
 
-                    data = self.export_methods_cls.fix_date_format({**crfdata})
                     exclude_fields.append('study_status')
                     for e_field in exclude_fields:
                         try:
@@ -56,8 +57,8 @@ class ExportKaraboData:
                                 mm_data += '~'
                         data[mm_field_name] = mm_data
 
-                    mergered_data.append(data)
-                    count += 1
+                mergered_data.append(data)
+                count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_infant_' + crf_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname

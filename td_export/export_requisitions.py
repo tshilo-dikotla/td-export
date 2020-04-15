@@ -10,7 +10,7 @@ from .export_model_lists import exclude_fields
 class ExportRequisitionData:
     """Export data.
     """
-    
+
     def __init__(self, maternal_export_path=None, infant_export_path=None):
         self.maternal_export_path = maternal_export_path or django_apps.get_app_config('td_export').maternal_path
         self.infant_export_path = infant_export_path or django_apps.get_app_config('td_export').infant_path
@@ -22,8 +22,10 @@ class ExportRequisitionData:
         crf_list = [
             'infantrequisition',
         ]
-        karabo_panels = [
-            'karabo_wb_pbmc_pl_panel', 'karabo_pbmc_pl_panel', 'infant_paxgene_panel']
+        karabo_panels = ['karabo_wb_pbmc_pl',
+                         'karabo_pbmc_pl',
+                         'infant_paxgene']
+
         for crf_name in crf_list:
             crf_cls = django_apps.get_model('td_infant', crf_name)
             objs = crf_cls.objects.all()
@@ -34,17 +36,12 @@ class ExportRequisitionData:
                     self.export_methods_cls.infant_crf_data(crf_obj))
                 data.update(panel_name=crf_obj.panel.name)
                 if data['panel_name'] in karabo_panels:
-                    data.update(protocol_number='108')
+                    data['protocol_number'] = '108'
                 for e_fields in exclude_fields:
                     try:
                         del data[e_fields]
                     except KeyError:
                         pass
-                try:
-                    del data['drawn_datetime']
-                    del data['received_datetime']
-                except KeyError:
-                    pass
                 crf_data.append(data)
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -54,13 +51,13 @@ class ExportRequisitionData:
             final_path = self.infant_export_path + fname
             df_crf = pd.DataFrame(crf_data)
             df_crf.to_csv(final_path, encoding='utf-8', index=False)
-    
+
     def maternal_requisitions(self):
         # Export Maternal Requisition data
         crf_list = [
             'maternalrequisition',
         ]
-        
+
         for crf_name in crf_list:
             crf_cls = django_apps.get_model('td_maternal', crf_name)
             objs = crf_cls.objects.all()
