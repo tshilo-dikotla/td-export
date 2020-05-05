@@ -28,7 +28,9 @@ maternal_crfs_list = [
     'maternalsrh',
     'maternalsubstanceuseduringpreg',
     'maternalhivinterimhx',
-    'maternalarvpostadh']
+    'maternalarvpostadh',
+    'maternalcovidscreening',
+    'maternalrecontact']
 
 maternal_inlines_dict = {
     'maternalarvpreg': ['maternalarv', 'maternal_arv_preg_id'],
@@ -45,7 +47,8 @@ infant_crf_list = [
     'infantfuphysical',
     'infantfeeding',
     'infantnvpadjustment',
-    'karabooffstudy']
+    'karabooffstudy',
+    'infantcovidscreening']
 
 karabo_infant_crf_list = ['karabooffstudy']
 
