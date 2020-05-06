@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from edc_base.view_mixins import EdcBaseViewMixin
+
 from edc_dashboard.view_mixins import ListboardFilterViewMixin, SearchFormViewMixin
 from edc_dashboard.views import ListboardView
 from edc_navbar import NavbarViewMixin
@@ -207,79 +208,58 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         download = self.request.GET.get('download')
-        active_download = False
 
         if download == '1':
-            threads = threading.enumerate()
-            threads = [t for t in threads if t.is_alive()]
-            if threads:
-                for thread in threads:
-                    if thread.is_alive() and thread.name == 'td_export':
-                        active_download = True
-                        messages.add_message(
-                            self.request, messages.INFO,
-                            ('Download that was initiated is still running '
-                             'please wait until an export is fully prepared.'))
-            if not active_download:
-                download_thread = threading.Thread(
-                    name='td_export', target=self.download_all_data)
-                download_thread.start()
-                last_doc = ExportFile.objects.filter(
-                    study='tshilo dikotla').order_by('created').last()
-                if last_doc:
-                    start_time = datetime.datetime.now().strftime(
-                        "%d/%m/%Y %H:%M:%S")
-                    last_doc_time = round(
-                        float(last_doc.downnload_time) / 60.0, 2)
-                    messages.add_message(
-                        self.request, messages.INFO,
-                        ('Download initiated, you will receive an email '
-                         'once the download is completed. Estimated '
-                         f'download time: {last_doc_time} minutes, file '
-                         f'generation started at: {start_time}'))
-                else:
-                    messages.add_message(
-                        self.request, messages.INFO,
-                        ('Download initiated, you will receive an email '
-                         'once the download is completed.'))
+            self.generate_export(thread_name='td_export',
+                                 thread_target=self.download_all_data,
+                                 study_name='tshilo dikotla')
         if download == '2':
-            threads = threading.enumerate()
-            threads = [t for t in threads if t.is_alive()]
-            if threads:
-                for thread in threads:
-                    if thread.is_alive() and thread.name == 'karabo_export':
-                        active_download = True
-                        messages.add_message(
-                            self.request, messages.INFO,
-                            ('Download that was initiated is still running '
-                             'please wait until an export is fully prepared.'))
-            if not active_download:
-                download_thread = threading.Thread(
-                    name='karabo_export', target=self.download_karabo_data)
-                download_thread.start()
-                last_doc = ExportFile.objects.filter(
-                    study='karabo').order_by('created').last()
-
-                if last_doc:
-                    start_time = datetime.datetime.now().strftime(
-                        "%d/%m/%Y %H:%M:%S")
-                    last_doc_time = round(
-                        float(last_doc.downnload_time) / 60.0, 2)
-
-                    messages.add_message(
-                        self.request, messages.INFO,
-                        ('Download initiated, you will receive an email once '
-                         'the download is completed. Estimated download time: '
-                         f'{last_doc_time} minutes, file generation started at:'
-                         f' {start_time}'))
-                else:
-                    messages.add_message(
-                        self.request, messages.INFO,
-                        ('Download initiated, you will receive an email once '
-                         'the download is completed.'))
+            self.generate_export(thread_name='karabo_export',
+                                 thread_target=self.download_karabo_data,
+                                 study_name='karabo')
 
         context.update(export_add_url=self.model_cls().get_absolute_url())
         return context
+
+    def generate_export(self, thread_name=None, active_download=False,
+                        thread_target=None, study_name=None):
+
+        threads = threading.enumerate()
+        if threads:
+            for thread in threads:
+                if thread.name == thread_name:
+                    active_download = True
+                    messages.add_message(
+                        self.request, messages.INFO,
+                        ('Download that was initiated is still running '
+                         'please wait until an export is fully prepared.'))
+        if not active_download:
+            # self.download_karabo_data,
+            download_thread = threading.Thread(
+                name=thread_name, target=thread_target,
+                daemon=True)
+            download_thread.start()
+
+            last_doc = ExportFile.objects.filter(
+                study=study_name).order_by('created').last()
+
+            if last_doc:
+                start_time = datetime.datetime.now().strftime(
+                    "%d/%m/%Y %H:%M:%S")
+                last_doc_time = round(
+                    float(last_doc.downnload_time) / 60.0, 2)
+
+                messages.add_message(
+                    self.request, messages.INFO,
+                    ('Download initiated, you will receive an email once '
+                     'the download is completed. Estimated download time: '
+                     f'{last_doc_time} minutes, file generation started at:'
+                     f' {start_time}'))
+            else:
+                messages.add_message(
+                    self.request, messages.INFO,
+                    ('Download initiated, you will receive an email once '
+                     'the download is completed.'))
 
     def get_queryset_filter_options(self, request, *args, **kwargs):
         options = super().get_queryset_filter_options(request, *args, **kwargs)
