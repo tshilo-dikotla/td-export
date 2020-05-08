@@ -29,7 +29,6 @@ maternal_crfs_list = [
     'maternalsubstanceuseduringpreg',
     'maternalhivinterimhx',
     'maternalarvpostadh',
-    'maternalcovidscreening',
     'maternalrecontact']
 
 maternal_inlines_dict = {
@@ -47,8 +46,7 @@ infant_crf_list = [
     'infantfuphysical',
     'infantfeeding',
     'infantnvpadjustment',
-    'karabooffstudy',
-    'infantcovidscreening']
+    'karabooffstudy']
 
 karabo_infant_crf_list = ['karabooffstudy']
 
@@ -75,6 +73,7 @@ infant_inlines_dict = {
     'infantarvproph': [['infantarvprophmod'], 'infant_arv_proph_id']}
 
 infant_many_to_many_crf = [
+    ['infantcovidscreening', 'covid_symptoms', 'covidsymptoms'],
     ['solidfoodassessment', 'solid_foods', 'Foods'],
     ['solidfoodassessment', 'rations_receviced', 'Rations'],
     ['karabotuberculosishistory', 'coughing_rel', 'CoughingRelation'],
@@ -95,6 +94,7 @@ karabo_maternal_model_list = [
     'karabosubjectconsent']
 
 maternal_many_to_many_crf = [
+    ['maternalcovidscreening', 'covid_symptoms', 'covidsymptoms'],
     ['maternalmedicalhistory', 'who', 'wcsdxadult'],
     ['maternalmedicalhistory', 'mother_chronic', 'chronicconditions'],
     ['maternalmedicalhistory', 'father_chronic', 'chronicconditions'],
