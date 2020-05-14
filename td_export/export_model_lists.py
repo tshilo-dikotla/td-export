@@ -14,7 +14,6 @@ maternal_crfs_list = [
     'maternalultrasoundinitial',
     'maternalobstericalhistory',
     'maternaldemographics',
-    'maternallifetimearvhistory',
     'maternalclinicalmeasurementsone',
     'maternalrando',
     'maternalinterimidcc',
@@ -23,9 +22,7 @@ maternal_crfs_list = [
     'maternaldiagnoses',
     'maternalsubstanceusepriorpreg',
     'maternalpostpartumdep',
-    'maternalpostpartumfu',
     'maternalcontraception',
-    'maternalsrh',
     'maternalsubstanceuseduringpreg',
     'maternalhivinterimhx',
     'maternalarvpostadh',
@@ -95,10 +92,15 @@ karabo_maternal_model_list = [
 
 maternal_many_to_many_crf = [
     ['maternalcovidscreening', 'covid_symptoms', 'covidsymptoms'],
+    ['maternallifetimearvhistory', 'prior_arv', 'priorarv'],
+    ['maternalcontraception', 'contraceptive_relative', 'maternalrelatives'],
+    ['maternalcontraception', 'contr', 'contraceptives'],
     ['maternalmedicalhistory', 'who', 'wcsdxadult'],
     ['maternalmedicalhistory', 'mother_chronic', 'chronicconditions'],
     ['maternalmedicalhistory', 'father_chronic', 'chronicconditions'],
     ['maternalmedicalhistory', 'mother_medications', 'maternalmedications'],
+    ['maternalpostpartumfu', 'hospitalization_reason', 'maternalhospitalization'],
+    ['maternalsrh', 'contr', 'contraceptives'],
 ]
 
 maternal_many_to_many_non_crf = [
