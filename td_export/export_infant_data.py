@@ -121,9 +121,8 @@ class ExportInfantCrfData:
                         mm_field_data += mm_obj.short_name
                         count += 1
                         if count < mm_objs.count():
-                            mm_field_data += '~'
+                            mm_field_data += ','
                         data[mm_field] = mm_field_data
-                        del data['short_name']
                 mergered_data.append(data)
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')

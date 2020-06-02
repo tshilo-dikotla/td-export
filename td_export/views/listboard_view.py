@@ -193,16 +193,18 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
                 del_doc = ExportFile.objects.get(
                     description='Tshilo Dikotla Export',
                     study='karabo',
-                    export_identifier=self.identifier_cls().identifier)
+                    export_identifier=export_identifier)
             except ExportFile.DoesNotExist:
-                print('STOP!!!!')
+                pass
             else:
                 del_doc.delete()
 
     def download_all_data(self):
         """Export all data.
         """
+
         export_identifier = self.identifier_cls().identifier
+
         last_doc = ExportFile.objects.filter(
             study='tshilo dikotla', download_complete=True).order_by(
                 'created').last()
@@ -214,10 +216,11 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
             'download_time': last_doc.download_time
         }
         doc = ExportFile.objects.create(**options)
+
         try:
             start = time.clock()
             today_date = datetime.datetime.now().strftime('%Y%m%d')
-            export_identifier = self.identifier_cls().identifier
+
             zipped_file_path = 'documents/' + export_identifier + '_td_export_' + today_date + '.zip'
             dir_to_zip = settings.MEDIA_ROOT + '/documents/' + export_identifier + '_td_export_' + today_date
 
@@ -232,6 +235,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
 
             maternal_export_path = dir_to_zip + '/maternal/'
             infant_export_path = dir_to_zip + '/infant/'
+
             self.export_requisitions(
                 maternal_export_path=maternal_export_path,
                 infant_export_path=infant_export_path)
@@ -250,9 +254,9 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
                 del_doc = ExportFile.objects.get(
                     description='Tshilo Dikotla Export',
                     study='tshilo dikotla',
-                    export_identifier=self.identifier_cls().identifier)
+                    export_identifier=export_identifier)
             except ExportFile.DoesNotExist:
-                print('STOP!!!!')
+                pass
             else:
                 del_doc.delete()
 
@@ -342,7 +346,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
 
         docs = ExportFile.objects.filter(download_complete=False,)
         for doc in docs:
-            now = get_utcnow() + timedelta(minutes=15)
+            now = get_utcnow() + timedelta(minutes=10)
             time = (now - doc.created).total_seconds()
             if doc.download_time < time:
                 doc.delete()

@@ -1,7 +1,8 @@
 from django.db import models
 from edc_base.model_mixins import BaseUuidModel
-from edc_search.model_mixins import SearchSlugManager
+
 from edc_base.sites import SiteModelMixin
+from edc_search.model_mixins import SearchSlugManager
 from edc_search.model_mixins import SearchSlugModelMixin as Base
 
 from ..identifiers import ExportIdentifier
