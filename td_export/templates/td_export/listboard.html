@@ -47,7 +47,11 @@
 	<td>{{ result.export_identifier }} </td>
 	<td>{{ result.description }} </td>
 	<td>{{ result.study }} </td>
-	<td><a href={{ result.file_url }}><i class="fa fa-download fa-sm"></i> file download</a></td>
+	<td>{% if result.file_url %}
+	   <a href={{ result.file_url }}><i class="fa fa-download fa-sm"></i> file download</a>
+	{% else %}
+	    Pending.. 
+	{% endif %}</td>
 	<td>{{result.uploaded_at}}</td>
 	<td>{{result.files_generation_time}}</td>
     <td nowrap>{{ result.user_created }}</td>

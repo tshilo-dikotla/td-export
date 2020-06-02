@@ -1,3 +1,4 @@
+from datetime import timedelta
 import datetime, os, re, time, threading, shutil
 
 from django.conf import settings
@@ -7,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.db.models import Q
 from django.utils.decorators import method_decorator
+from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
 
 from edc_dashboard.view_mixins import ListboardFilterViewMixin, SearchFormViewMixin
@@ -113,25 +115,20 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
                 thread._stop()
 
     def zipfile(
-            self, dir_to_zip=None, zipped_file_path=None, start=None, export_identifier=None, study=None):
+            self, dir_to_zip=None, zipped_file_path=None, start=None, export_identifier=None, doc=None, study=None):
         """Zip file.
         """
         # Zip the file
 
+        doc.download_complete = True
+        doc.save()
+
         if not os.path.isfile(dir_to_zip):
             shutil.make_archive(dir_to_zip, 'zip', dir_to_zip)
             # Create a document object.
-            options = {
-                'description': 'Tshilo Dikotla' + ' Export',
-                'study': study,
-                'export_identifier': export_identifier
-            }
-            doc = ExportFile.objects.create(**options)
-            doc.document = zipped_file_path
-            doc.save()
 
             end = time.clock()
-            downnload_time = end - start
+            download_time = end - start
             try:
                 doc = ExportFile.objects.get(
                     export_identifier=export_identifier)
@@ -139,7 +136,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
                 raise ValidationError('Export file is missing for id: ',
                                       export_identifier)
             else:
-                doc.downnload_time = downnload_time
+                doc.download_time = download_time
                 doc.save()
 
             # Notify user the download is done
@@ -158,54 +155,109 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
     def download_karabo_data(self):
         """Export all data.
         """
-        start = time.clock()
-        today_date = datetime.datetime.now().strftime('%Y%m%d')
         export_identifier = self.identifier_cls().identifier
-        zipped_file_path = 'documents/' + export_identifier + '_karabo_export_' + today_date + '.zip'
-        dir_to_zip = settings.MEDIA_ROOT + '/documents/' + export_identifier + '_karabo_export_' + today_date
 
-        export_path = dir_to_zip + '/infant/'
-        self.export_karabo_infant_data(export_path=export_path)
+        last_doc = ExportFile.objects.filter(
+            study='karabo', download_complete=True).order_by(
+                'created').last()
 
-        export_path = dir_to_zip + '/non_crf/'
-        self.export_karabo_non_crf_data(export_path=export_path)
+        options = {
+            'description': 'Tshilo Dikotla Export',
+            'study': 'karabo',
+            'export_identifier': export_identifier,
+            'download_time': last_doc.download_time
+        }
+        doc = ExportFile.objects.create(**options)
 
-        self.zipfile(
-            dir_to_zip=dir_to_zip, zipped_file_path=zipped_file_path,
-            start=start, export_identifier=export_identifier, study='karabo')
+        try:
+            start = time.clock()
+            today_date = datetime.datetime.now().strftime('%Y%m%d')
+
+            zipped_file_path = 'documents/' + export_identifier + '_karabo_export_' + today_date + '.zip'
+            dir_to_zip = settings.MEDIA_ROOT + '/documents/' + export_identifier + '_karabo_export_' + today_date
+
+            export_path = dir_to_zip + '/infant/'
+            self.export_karabo_infant_data(export_path=export_path)
+
+            export_path = dir_to_zip + '/non_crf/'
+            self.export_karabo_non_crf_data(export_path=export_path)
+
+            doc.document = zipped_file_path
+            doc.save()
+
+            self.zipfile(
+                dir_to_zip=dir_to_zip, zipped_file_path=zipped_file_path,
+                start=start, export_identifier=export_identifier, doc=doc, study='karabo')
+        except Exception as e:
+            try:
+                del_doc = ExportFile.objects.get(
+                    description='Tshilo Dikotla Export',
+                    study='karabo',
+                    export_identifier=self.identifier_cls().identifier)
+            except ExportFile.DoesNotExist:
+                print('STOP!!!!')
+            else:
+                del_doc.delete()
 
     def download_all_data(self):
         """Export all data.
         """
-        start = time.clock()
-        today_date = datetime.datetime.now().strftime('%Y%m%d')
         export_identifier = self.identifier_cls().identifier
-        zipped_file_path = 'documents/' + export_identifier + '_td_export_' + today_date + '.zip'
-        dir_to_zip = settings.MEDIA_ROOT + '/documents/' + export_identifier + '_td_export_' + today_date
+        last_doc = ExportFile.objects.filter(
+            study='tshilo dikotla', download_complete=True).order_by(
+                'created').last()
 
-        export_path = dir_to_zip + '/maternal/'
-        self.export_maternal_data(export_path=export_path)
+        options = {
+            'description': 'Tshilo Dikotla Export',
+            'study': 'tshilo dikotla',
+            'export_identifier': export_identifier,
+            'download_time': last_doc.download_time
+        }
+        doc = ExportFile.objects.create(**options)
+        try:
+            start = time.clock()
+            today_date = datetime.datetime.now().strftime('%Y%m%d')
+            export_identifier = self.identifier_cls().identifier
+            zipped_file_path = 'documents/' + export_identifier + '_td_export_' + today_date + '.zip'
+            dir_to_zip = settings.MEDIA_ROOT + '/documents/' + export_identifier + '_td_export_' + today_date
 
-        export_path = dir_to_zip + '/infant/'
-        self.export_infant_data(export_path=export_path)
+            export_path = dir_to_zip + '/maternal/'
+            self.export_maternal_data(export_path=export_path)
 
-        export_path = dir_to_zip + '/non_crf/'
-        self.export_non_crf_data(export_path=export_path)
+            export_path = dir_to_zip + '/infant/'
+            self.export_infant_data(export_path=export_path)
 
-        maternal_export_path = dir_to_zip + '/maternal/'
-        infant_export_path = dir_to_zip + '/infant/'
-        self.export_requisitions(
-            maternal_export_path=maternal_export_path,
-            infant_export_path=infant_export_path)
+            export_path = dir_to_zip + '/non_crf/'
+            self.export_non_crf_data(export_path=export_path)
 
-        # Zip the file
+            maternal_export_path = dir_to_zip + '/maternal/'
+            infant_export_path = dir_to_zip + '/infant/'
+            self.export_requisitions(
+                maternal_export_path=maternal_export_path,
+                infant_export_path=infant_export_path)
 
-        self.zipfile(
-            dir_to_zip=dir_to_zip, zipped_file_path=zipped_file_path,
-            start=start, export_identifier=export_identifier,
-            study='tshilo dikotla')
+            doc.document = zipped_file_path
+            doc.save()
+
+            # Zip the file
+
+            self.zipfile(
+                dir_to_zip=dir_to_zip, zipped_file_path=zipped_file_path,
+                start=start, export_identifier=export_identifier,
+                doc=doc, study='tshilo dikotla')
+        except Exception as e:
+            try:
+                del_doc = ExportFile.objects.get(
+                    description='Tshilo Dikotla Export',
+                    study='tshilo dikotla',
+                    export_identifier=self.identifier_cls().identifier)
+            except ExportFile.DoesNotExist:
+                print('STOP!!!!')
+            else:
+                del_doc.delete()
 
     def get_context_data(self, **kwargs):
+        self.clean_up()
         context = super().get_context_data(**kwargs)
         download = self.request.GET.get('download')
 
@@ -233,21 +285,33 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
                         self.request, messages.INFO,
                         ('Download that was initiated is still running '
                          'please wait until an export is fully prepared.'))
+
+        current_file = ExportFile.objects.filter(
+            study=study_name,
+            download_complete=False).order_by('created').last()
+        if current_file:
+            time = (get_utcnow() - current_file.created).total_seconds()
+
+            if time < current_file.download_time:
+                active_download = True
+
         if not active_download:
             # self.download_karabo_data,
+
             download_thread = threading.Thread(
                 name=thread_name, target=thread_target,
                 daemon=True)
             download_thread.start()
 
             last_doc = ExportFile.objects.filter(
-                study=study_name).order_by('created').last()
+                study=study_name,
+                download_complete=True).order_by('created').last()
 
             if last_doc:
                 start_time = datetime.datetime.now().strftime(
                     "%d/%m/%Y %H:%M:%S")
                 last_doc_time = round(
-                    float(last_doc.downnload_time) / 60.0, 2)
+                    float(last_doc.download_time) / 60.0, 2)
 
                 messages.add_message(
                     self.request, messages.INFO,
@@ -273,3 +337,12 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin,
         if re.match('^[A-Z]+$', search_term):
             q = Q(first_name__exact=search_term)
         return q
+
+    def clean_up(self):
+
+        docs = ExportFile.objects.filter(download_complete=False,)
+        for doc in docs:
+            now = get_utcnow() + timedelta(minutes=15)
+            time = (now - doc.created).total_seconds()
+            if doc.download_time < time:
+                doc.delete()

@@ -13,13 +13,16 @@ class ExportFileModelWrapper(ModelWrapper):
     def file_url(self):
         """Return the file url.
         """
-        return self.object.document.url
+        try:
+            return self.object.document.url
+        except ValueError:
+            return None
 
     @property
     def files_generation_time(self):
         """return file generation time in minutes
         """
-        download_time = self.object.downnload_time
+        download_time = self.object.download_time
         if download_time:
-            return round(float(self.object.downnload_time) / 60.0, 2)
+            return round(float(self.object.download_time) / 60.0, 2)
         return None

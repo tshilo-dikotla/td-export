@@ -1,8 +1,10 @@
+import datetime
+import os
 from django.apps import apps as django_apps
-import pandas as pd, datetime, os
+import pandas as pd
 
 from .export_methods import ExportMethods
-from .export_model_lists import exclude_fields
+from .export_model_lists import exclude_m2m_fields
 
 
 class ExportKaraboData:
@@ -38,8 +40,7 @@ class ExportKaraboData:
                     if mm_field_name == 'subject_identifier':
                         mm_field_name = 'infant_subject_identifier'
 
-                    exclude_fields.append('study_status')
-                    for e_field in exclude_fields:
+                    for e_field in exclude_m2m_fields:
                         try:
                             del data[e_field]
                         except KeyError:

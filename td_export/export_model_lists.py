@@ -8,7 +8,11 @@ exclude_fields = [
     'infant_visit_id', 'maternal_visit_id', 'processed', 'processed_datetime',
     'packed', 'packed_datetime', 'shipped', 'shipped_datetime',
     'received_datetime', 'identifier_prefix', 'primary_aliquot_identifier',
-    'clinic_verified', 'clinic_verified_datetime', 'drawn_datetime']
+    'clinic_verified', 'clinic_verified_datetime', 'drawn_datetime',
+    'related_tracking_identifier', 'parent_tracking_identifier']
+
+exclude_m2m_fields = exclude_fields + ['display_index', 'field_name',
+                                       'name', 'version']
 
 maternal_crfs_list = [
     'maternalultrasoundinitial',
@@ -20,6 +24,7 @@ maternal_crfs_list = [
     'maternalclinicalmeasurementstwo',
     'rapidtestresult',
     'maternaldiagnoses',
+    'maternalfoodsecurity',
     'maternalsubstanceusepriorpreg',
     'maternalpostpartumdep',
     'maternalcontraception',

@@ -1,8 +1,12 @@
+import datetime
+import os
+
 from django.apps import apps as django_apps
-import pandas as pd, datetime, os
+
+import pandas as pd
 
 from .export_methods import ExportMethods
-from .export_model_lists import exclude_fields
+from .export_model_lists import exclude_fields, exclude_m2m_fields
 
 
 class ExportInfantCrfData:
@@ -97,27 +101,31 @@ class ExportInfantCrfData:
             mergered_data = []
             crf_objs = crf_cls.objects.all()
             for crf_obj in crf_objs:
+
+                crfdata = self.export_methods_cls.infant_crf_data(crf_obj)
+                data = self.export_methods_cls.fix_date_format({**crfdata})
+
+                exclude_m2m_fields.append('study_status')
+                for e_fields in exclude_m2m_fields:
+                    try:
+                        del data[e_fields]
+                    except KeyError:
+                        pass
+                data[mm_field] = None
+                mm_field_data = ''
+
                 mm_objs = getattr(crf_obj, mm_field).all()
                 if mm_objs:
                     for mm_obj in mm_objs:
-                        mm_data = mm_obj.__dict__
 
-                        crfdata = self.export_methods_cls.infant_crf_data(crf_obj)
-
-                        # Merged many to many and CRF data
-                        data = self.export_methods_cls.fix_date_format({**crfdata, **mm_data})
-                        for e_fields in exclude_fields:
-                            try:
-                                del data[e_fields]
-                            except KeyError:
-                                pass
-                        mergered_data.append(data)
+                        mm_field_data += mm_obj.short_name
                         count += 1
-                else:
-                    crfdata = self.export_methods_cls.fix_date_format(
-                        self.export_methods_cls.infant_crf_data(crf_obj))
-                    mergered_data.append(crfdata)
-                    count += 1
+                        if count < mm_objs.count():
+                            mm_field_data += '~'
+                        data[mm_field] = mm_field_data
+                        del data['short_name']
+                mergered_data.append(data)
+                count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             fname = 'td_infant_' + crf_name + '_' + 'merged' '_' + mm_field + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
