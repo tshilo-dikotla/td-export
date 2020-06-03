@@ -103,50 +103,62 @@ class ListBoardViewMixin:
     def download_karabo_data(self):
         """Export all data.
         """
-        export_identifier = self.identifier_cls().identifier
+        current_file = ExportFile.objects.filter(
+            study='tshilo dikotla',
+            download_complete=False).order_by('created').last()
+        if current_file:
+            time = (get_utcnow() - current_file.created).total_seconds()
 
-        last_doc = ExportFile.objects.filter(
-            study='karabo', download_complete=True).order_by(
-                'created').last()
+            if time > current_file.download_time:
+                messages.add_message(
+                    self.request, messages.INFO,
+                    ('Download that was initiated is still running '
+                     'please wait until an export is fully prepared.'))
+        else:
+            export_identifier = self.identifier_cls().identifier
 
-        options = {
-            'description': 'Tshilo Dikotla Export',
-            'study': 'karabo',
-            'export_identifier': export_identifier,
-            'download_time': last_doc.download_time
-        }
-        doc = ExportFile.objects.create(**options)
+            last_doc = ExportFile.objects.filter(
+                study='karabo', download_complete=True).order_by(
+                    'created').last()
 
-        try:
-            start = time.clock()
-            today_date = datetime.datetime.now().strftime('%Y%m%d')
+            options = {
+                'description': 'Tshilo Dikotla Export',
+                'study': 'karabo',
+                'export_identifier': export_identifier,
+                'download_time': last_doc.download_time
+            }
+            doc = ExportFile.objects.create(**options)
 
-            zipped_file_path = 'documents/' + export_identifier + '_karabo_export_' + today_date + '.zip'
-            dir_to_zip = settings.MEDIA_ROOT + '/documents/' + export_identifier + '_karabo_export_' + today_date
-
-            export_path = dir_to_zip + '/infant/'
-            self.export_karabo_infant_data(export_path=export_path)
-
-            export_path = dir_to_zip + '/non_crf/'
-            self.export_karabo_non_crf_data(export_path=export_path)
-
-            doc.document = zipped_file_path
-            doc.save()
-
-            self.zipfile(
-                dir_to_zip=dir_to_zip, start=start,
-                export_identifier=export_identifier,
-                doc=doc, study='karabo')
-        except Exception as e:
             try:
-                del_doc = ExportFile.objects.get(
-                    description='Tshilo Dikotla Export',
-                    study='karabo',
-                    export_identifier=export_identifier)
-            except ExportFile.DoesNotExist:
-                pass
-            else:
-                del_doc.delete()
+                start = time.clock()
+                today_date = datetime.datetime.now().strftime('%Y%m%d')
+
+                zipped_file_path = 'documents/' + export_identifier + '_karabo_export_' + today_date + '.zip'
+                dir_to_zip = settings.MEDIA_ROOT + '/documents/' + export_identifier + '_karabo_export_' + today_date
+
+                export_path = dir_to_zip + '/infant/'
+                self.export_karabo_infant_data(export_path=export_path)
+
+                export_path = dir_to_zip + '/non_crf/'
+                self.export_karabo_non_crf_data(export_path=export_path)
+
+                doc.document = zipped_file_path
+                doc.save()
+
+                self.zipfile(
+                    dir_to_zip=dir_to_zip, start=start,
+                    export_identifier=export_identifier,
+                    doc=doc, study='karabo')
+            except Exception as e:
+                try:
+                    del_doc = ExportFile.objects.get(
+                        description='Tshilo Dikotla Export',
+                        study='karabo',
+                        export_identifier=export_identifier)
+                except ExportFile.DoesNotExist:
+                    pass
+                else:
+                    del_doc.delete()
 
     def download_all_data(self):
         """Export all data.
