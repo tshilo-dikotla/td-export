@@ -53,7 +53,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin, ListBoardViewMixin,
                 thread._stop()
 
     def get_context_data(self, **kwargs):
-        self.clean_up()
+
         context = super().get_context_data(**kwargs)
         download = self.request.GET.get('download')
 
@@ -97,6 +97,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin, ListBoardViewMixin,
                          'please wait until an export is fully prepared.'))
 
         if not active_download:
+            self.clean_up()
 
             download_thread = threading.Thread(
                 name=thread_name, target=thread_target,
@@ -129,8 +130,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin, ListBoardViewMixin,
 
         docs = ExportFile.objects.filter(download_complete=False,)
         for doc in docs:
-            now = get_utcnow() + timedelta(minutes=10)
-            time = (now - doc.created).total_seconds()
+            time = (get_utcnow() - doc.created).total_seconds()
             if doc.download_time < time:
                 doc.delete()
 
