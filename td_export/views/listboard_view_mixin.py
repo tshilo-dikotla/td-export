@@ -104,17 +104,18 @@ class ListBoardViewMixin:
         """Export all data.
         """
         current_file = ExportFile.objects.filter(
-            study='tshilo dikotla',
+            study='karabo',
             download_complete=False).order_by('created').last()
         if current_file:
-            time = (get_utcnow() - current_file.created).total_seconds()
+            time_now = (get_utcnow() - current_file.created).total_seconds()
 
-            if time > current_file.download_time:
+            if time_now > current_file.download_time:
                 messages.add_message(
                     self.request, messages.INFO,
                     ('Download that was initiated is still running '
                      'please wait until an export is fully prepared.'))
         else:
+            self.clean_up()
             export_identifier = self.identifier_cls().identifier
 
             last_doc = ExportFile.objects.filter(
@@ -163,18 +164,21 @@ class ListBoardViewMixin:
     def download_all_data(self):
         """Export all data.
         """
+#         import pdb; pdb.set_trace()
+
         current_file = ExportFile.objects.filter(
             study='tshilo dikotla',
             download_complete=False).order_by('created').last()
         if current_file:
-            time = (get_utcnow() - current_file.created).total_seconds()
+            time_now = (get_utcnow() - current_file.created).total_seconds()
 
-            if time > current_file.download_time:
+            if time_now > current_file.download_time:
                 messages.add_message(
                     self.request, messages.INFO,
                     ('Download that was initiated is still running '
                      'please wait until an export is fully prepared.'))
         else:
+            self.clean_up()
 
             export_identifier = self.identifier_cls().identifier
 
@@ -272,3 +276,11 @@ class ListBoardViewMixin:
                 fail_silently=False)
             threading.Thread(target=self.stop_main_thread)
 
+    def clean_up(self):
+
+        docs = ExportFile.objects.filter(download_complete=False,)
+        for doc in docs:
+            time = (get_utcnow() - doc.created).total_seconds()
+
+            if doc.download_time < time:
+                doc.delete()

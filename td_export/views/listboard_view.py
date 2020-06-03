@@ -83,7 +83,6 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin, ListBoardViewMixin,
                          'please wait until an export is fully prepared.'))
 
         if not active_download:
-            self.clean_up()
 
             download_thread = threading.Thread(
                 name=thread_name, target=thread_target,
@@ -111,14 +110,6 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin, ListBoardViewMixin,
                     self.request, messages.INFO,
                     ('Download initiated, you will receive an email once '
                      'the download is completed.'))
-
-    def clean_up(self):
-
-        docs = ExportFile.objects.filter(download_complete=False,)
-        for doc in docs:
-            time = (get_utcnow() - doc.created).total_seconds()
-            if doc.download_time < time:
-                doc.delete()
 
     def get_queryset_filter_options(self, request, *args, **kwargs):
         options = super().get_queryset_filter_options(request, *args, **kwargs)
