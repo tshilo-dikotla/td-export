@@ -34,8 +34,8 @@ maternal_crfs_list = [
     'maternalrecontact']
 
 maternal_inlines_dict = {
-    'maternalarvpreg': ['maternalarv', 'maternal_arv_preg_id'],
-    'maternalarvpost': ['maternalarvpostmed', 'maternal_arv_post_id']
+    'maternalarvpreg': [['maternalarv'], 'maternal_arv_preg_id'],
+    'maternalarvpost': [['maternalarvpostmed'], 'maternal_arv_post_id']
 }
 
 infant_crf_list = [

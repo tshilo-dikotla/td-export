@@ -1,6 +1,5 @@
 import datetime
 import os
-
 from django.apps import apps as django_apps
 
 import pandas as pd
@@ -9,28 +8,27 @@ from .export_methods import ExportMethods
 from .export_model_lists import exclude_fields, exclude_m2m_fields
 
 
-class ExportInfantCrfData:
-    """Export data.
-    """
+class ExportDataMixin:
 
     def __init__(self, export_path=None):
-        self.export_path = export_path or django_apps.get_app_config('td_export').infant_path
+        self.export_path = export_path or django_apps.get_app_config('td_export').maternal_path
         if not os.path.exists(self.export_path):
             os.makedirs(self.export_path)
         self.export_methods_cls = ExportMethods()
 
-    def export_infant_crfs(self, infant_crf_list=None):
-        """Export infant crf data.
-        """
+    def export_crfs(self, crf_list=None, crf_data_dict=None, study=None):
 
-        for crf_name in infant_crf_list:
-            crf_cls = django_apps.get_model('td_infant', crf_name)
+        """Export crf data.
+        """
+        for crf_name in crf_list:
+            crf_cls = django_apps.get_model(study, crf_name)
             objs = crf_cls.objects.all()
             count = 0
             crf_data = []
             for crf_obj in objs:
+                temp_data = crf_data_dict(crf_obj=crf_obj)
                 data = self.export_methods_cls.fix_date_format(
-                    self.export_methods_cls.infant_crf_data(crf_obj))
+                    obj_dict=temp_data)
                 for e_fields in exclude_fields:
                     try:
                         del data[e_fields]
@@ -39,21 +37,21 @@ class ExportInfantCrfData:
                 crf_data.append(data)
                 count += 1
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-            fname = 'td_infant_' + crf_name + '_' + timestamp + '.csv'
+            fname = study + '_' + crf_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
             df_crf = pd.DataFrame(crf_data)
             df_crf.to_csv(final_path, encoding='utf-8', index=False)
 
-    def export_infant_inline(self, infant_inlines_dict=None):
-        """Export inline data.
+    def export_inline_crfs(self, inlines_dict=None, crf_data_dict=None, study=None):
+        """Export Inline data.
         """
 
-        for crf_name, inline_n_field in infant_inlines_dict.items():
+        for crf_name, inline_n_field in inlines_dict.items():
             inline, filed_n = inline_n_field
             for inl in inline:
-                inline_cls = django_apps.get_model('td_infant', inl)
+                inline_cls = django_apps.get_model(study, inl)
                 inline_objs = inline_cls.objects.all()
-                crf_cls = django_apps.get_model('td_infant', crf_name)
+                crf_cls = django_apps.get_model(study, crf_name)
                 count = 0
                 mergered_data = []
                 crf_objs = crf_cls.objects.all()
@@ -64,7 +62,7 @@ class ExportInfantCrfData:
                             in_data = inline_obj.__dict__
                             del in_data['_state']
 
-                            crfdata = self.export_methods_cls.infant_crf_data(crf_obj)
+                            crfdata = crf_data_dict(crf_obj)
 
                             # Merged inline and CRF data
                             data = self.export_methods_cls.fix_date_format({**crfdata, **in_data})
@@ -77,7 +75,7 @@ class ExportInfantCrfData:
                             count += 1
                     else:
                         crfdata = self.export_methods_cls.fix_date_format(
-                            self.export_methods_cls.infant_crf_data(crf_obj))
+                            crf_data_dict(crf_obj))
                         for e_fields in exclude_fields:
                             try:
                                 del crfdata[e_fields]
@@ -86,47 +84,47 @@ class ExportInfantCrfData:
                         mergered_data.append(crfdata)
                         count += 1
                 timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-                fname = 'td_infant_' + crf_name + '_' + 'merged' '_' + inl + '_' + timestamp + '.csv'
+                fname = study + '_' + crf_name + '_' + 'merged' '_' + inl + '_' + timestamp + '.csv'
                 final_path = self.export_path + fname
                 df_crf_inline = pd.DataFrame(mergered_data)
                 df_crf_inline.to_csv(final_path, encoding='utf-8', index=False)
 
-    def infant_m2m_crf(self, infant_many_to_many_crf=None):
-        # Export Infant Many-to-Many data
+    def generate_m2m_crf(self, m2m_class=None, crf_data_dict=None, study=None,):
 
-        for crf_infor in infant_many_to_many_crf:
-            crf_name, mm_field, _ = crf_infor
-            crf_cls = django_apps.get_model('td_infant', crf_name)
-            count = 0
-            mergered_data = []
-            crf_objs = crf_cls.objects.all()
-            for crf_obj in crf_objs:
+        for crf_infor in m2m_class:
+                crf_name, mm_field, _ = crf_infor
+                crf_cls = django_apps.get_model(study, crf_name)
+                count = 0
+                mergered_data = []
+                crf_objs = crf_cls.objects.all()
+                for crf_obj in crf_objs:
 
-                crfdata = self.export_methods_cls.infant_crf_data(crf_obj)
-                data = self.export_methods_cls.fix_date_format({**crfdata})
+                    crfdata = crf_data_dict(crf_obj=crf_obj)
+                    data = self.export_methods_cls.fix_date_format({**crfdata})
 
-                exclude_m2m_fields.append('study_status')
-                for e_fields in exclude_m2m_fields:
-                    try:
-                        del data[e_fields]
-                    except KeyError:
-                        pass
-                data[mm_field] = None
-                mm_field_data = ''
+                    exclude_m2m_fields.append('study_status')
+                    for e_fields in exclude_m2m_fields:
+                        try:
+                            del data[e_fields]
+                        except KeyError:
+                            pass
+                    data[mm_field] = None
+                    mm_field_data = ''
 
-                mm_objs = getattr(crf_obj, mm_field).all()
-                if mm_objs:
-                    for mm_obj in mm_objs:
+                    mm_objs = getattr(crf_obj, mm_field).all()
 
-                        mm_field_data += mm_obj.short_name
-                        count += 1
-                        if count < mm_objs.count():
-                            mm_field_data += ','
+                    if mm_objs:
+                        for mm_obj in mm_objs:
+
+                            mm_field_data += mm_obj.short_name
+                            count += 1
+                            if count < mm_objs.count():
+                                mm_field_data += ','
                         data[mm_field] = mm_field_data
-                mergered_data.append(data)
-                count += 1
-            timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-            fname = 'td_infant_' + crf_name + '_' + 'merged' '_' + mm_field + '_' + timestamp + '.csv'
-            final_path = self.export_path + fname
-            df_crf_inline = pd.DataFrame(mergered_data)
-            df_crf_inline.to_csv(final_path, encoding='utf-8', index=False)
+                    mergered_data.append(data)
+                    count += 1
+                timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+                fname = study + '_' + crf_name + '_' + 'merged' '_' + mm_field + '_' + timestamp + '.csv'
+                final_path = self.export_path + fname
+                df_crf_many2many = pd.DataFrame(mergered_data)
+                df_crf_many2many.to_csv(final_path, encoding='utf-8', index=False)
