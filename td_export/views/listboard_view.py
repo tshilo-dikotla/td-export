@@ -81,20 +81,6 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin, ListBoardViewMixin,
                         self.request, messages.INFO,
                         ('Download that was initiated is still running '
                          'please wait until an export is fully prepared.'))
-        else:
-            current_file = ExportFile.objects.filter(
-                study=study_name,
-                download_complete=False).order_by('created').last()
-            if current_file:
-                time = (get_utcnow() - current_file.created).total_seconds()
-
-                if time < current_file.download_time:
-                    active_download = True
-                else:
-                    messages.add_message(
-                        self.request, messages.INFO,
-                        ('Download that was initiated is still running '
-                         'please wait until an export is fully prepared.'))
 
         if not active_download:
             self.clean_up()
