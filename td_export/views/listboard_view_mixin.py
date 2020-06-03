@@ -103,6 +103,7 @@ class ListBoardViewMixin:
     def download_karabo_data(self):
         """Export all data.
         """
+        self.clean_up()
         current_file = ExportFile.objects.filter(
             study='karabo',
             download_complete=False).order_by('created').last()
@@ -115,7 +116,6 @@ class ListBoardViewMixin:
                     ('Download that was initiated is still running '
                      'please wait until an export is fully prepared.'))
         else:
-            self.clean_up()
             export_identifier = self.identifier_cls().identifier
 
             last_doc = ExportFile.objects.filter(
@@ -164,8 +164,7 @@ class ListBoardViewMixin:
     def download_all_data(self):
         """Export all data.
         """
-#         import pdb; pdb.set_trace()
-
+        self.clean_up()
         current_file = ExportFile.objects.filter(
             study='tshilo dikotla',
             download_complete=False).order_by('created').last()
@@ -178,7 +177,6 @@ class ListBoardViewMixin:
                     ('Download that was initiated is still running '
                      'please wait until an export is fully prepared.'))
         else:
-            self.clean_up()
 
             export_identifier = self.identifier_cls().identifier
 

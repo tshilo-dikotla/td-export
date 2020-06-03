@@ -73,6 +73,7 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin, ListBoardViewMixin,
                         thread_target=None, study_name=None):
 
         threads = threading.enumerate()
+
         if threads:
             for thread in threads:
                 if thread.name == thread_name:
