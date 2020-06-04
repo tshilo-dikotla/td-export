@@ -85,32 +85,35 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin, ListBoardViewMixin,
 
         if not active_download:
 
-            download_thread = threading.Thread(
-                name=thread_name, target=thread_target,
-                daemon=True)
-            download_thread.start()
+            is_clean = self.is_clean(study_name=study_name)
+            if is_clean:
 
-            last_doc = ExportFile.objects.filter(
-                study=study_name,
-                download_complete=True).order_by('created').last()
+                download_thread = threading.Thread(
+                    name=thread_name, target=thread_target,
+                    daemon=True)
+                download_thread.start()
 
-            if last_doc:
-                start_time = datetime.datetime.now().strftime(
-                    "%d/%m/%Y %H:%M:%S")
-                last_doc_time = round(
-                    float(last_doc.download_time) / 60.0, 2)
+                last_doc = ExportFile.objects.filter(
+                    study=study_name,
+                    download_complete=True).order_by('created').last()
 
-                messages.add_message(
-                    self.request, messages.INFO,
-                    ('Download initiated, you will receive an email once '
-                     'the download is completed. Estimated download time: '
-                     f'{last_doc_time} minutes, file generation started at:'
-                     f' {start_time}'))
-            else:
-                messages.add_message(
-                    self.request, messages.INFO,
-                    ('Download initiated, you will receive an email once '
-                     'the download is completed.'))
+                if last_doc:
+                    start_time = datetime.datetime.now().strftime(
+                        "%d/%m/%Y %H:%M:%S")
+                    last_doc_time = round(
+                        float(last_doc.download_time) / 60.0, 2)
+
+                    messages.add_message(
+                        self.request, messages.INFO,
+                        ('Download initiated, you will receive an email once '
+                         'the download is completed. Estimated download time: '
+                         f'{last_doc_time} minutes, file generation started at:'
+                         f' {start_time}'))
+                else:
+                    messages.add_message(
+                        self.request, messages.INFO,
+                        ('Download initiated, you will receive an email once '
+                         'the download is completed.'))
 
     def get_queryset_filter_options(self, request, *args, **kwargs):
         options = super().get_queryset_filter_options(request, *args, **kwargs)
