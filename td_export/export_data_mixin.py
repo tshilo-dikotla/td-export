@@ -99,30 +99,16 @@ class ExportDataMixin:
                 crf_objs = crf_cls.objects.all()
                 for crf_obj in crf_objs:
 
-                    crfdata = crf_data_dict(crf_obj=crf_obj)
-                    data = self.export_methods_cls.fix_date_format({**crfdata})
-
-                    exclude_m2m_fields.append('study_status')
-                    for e_fields in exclude_m2m_fields:
-                        try:
-                            del data[e_fields]
-                        except KeyError:
-                            pass
-                    data[mm_field] = None
-                    mm_field_data = ''
+                    crfdata = self.export_methods_cls.fix_date_format(
+                        crf_data_dict(crf_obj=crf_obj))
 
                     mm_objs = getattr(crf_obj, mm_field).all()
-
                     if mm_objs:
                         for mm_obj in mm_objs:
-
-                            mm_field_data += mm_obj.short_name
-                            count += 1
-                            if count < mm_objs.count():
-                                mm_field_data += ','
-                        data[mm_field] = mm_field_data
-                    mergered_data.append(data)
-                    count += 1
+                            # Merged many to many and CRF data
+                            crfdata[mm_field] = mm_obj.short_name
+                        mergered_data.append(crfdata)
+                        count += 1
                 timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
                 fname = study + '_' + crf_name + '_' + 'merged' '_' + mm_field + '_' + timestamp + '.csv'
                 final_path = self.export_path + fname
