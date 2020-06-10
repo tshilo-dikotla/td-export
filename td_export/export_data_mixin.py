@@ -5,7 +5,7 @@ from django.apps import apps as django_apps
 import pandas as pd
 
 from .export_methods import ExportMethods
-from .export_model_lists import exclude_fields, exclude_m2m_fields
+from .export_model_lists import exclude_fields
 
 
 class ExportDataMixin:
@@ -102,6 +102,11 @@ class ExportDataMixin:
                     crfdata = self.export_methods_cls.fix_date_format(
                         crf_data_dict(crf_obj=crf_obj))
 
+                    for e_fields in exclude_fields:
+                        try:
+                            del crfdata[e_fields]
+                        except KeyError:
+                            pass
                     mm_objs = getattr(crf_obj, mm_field).all()
                     if mm_objs:
                         for mm_obj in mm_objs:

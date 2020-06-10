@@ -84,7 +84,6 @@ class ListBoardView(NavbarViewMixin, EdcBaseViewMixin, ListBoardViewMixin,
                          'please wait until an export is fully prepared.'))
 
         if not active_download:
-
             is_clean = self.is_clean(study_name=study_name)
             if is_clean:
 
