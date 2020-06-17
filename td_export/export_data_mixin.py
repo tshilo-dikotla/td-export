@@ -98,22 +98,33 @@ class ExportDataMixin:
                 mergered_data = []
                 crf_objs = crf_cls.objects.all()
                 for crf_obj in crf_objs:
-
-                    crfdata = self.export_methods_cls.fix_date_format(
-                        crf_data_dict(crf_obj=crf_obj))
-
-                    for e_fields in exclude_fields:
-                        try:
-                            del crfdata[e_fields]
-                        except KeyError:
-                            pass
                     mm_objs = getattr(crf_obj, mm_field).all()
                     if mm_objs:
                         for mm_obj in mm_objs:
+                            mm_data = {mm_obj.short_name: mm_obj.short_name}
+
+                            crfdata = crf_data_dict(crf_obj=crf_obj)
+
                             # Merged many to many and CRF data
-                            crfdata[mm_field] = mm_obj.short_name
+                            data = self.export_methods_cls.fix_date_format({**crfdata, **mm_data})
+                            for e_fields in exclude_fields:
+                                try:
+                                    del data[e_fields]
+                                except KeyError:
+                                    pass
+                            mergered_data.append(data)
+                            count += 1
+                    else:
+                        crfdata = self.export_methods_cls.fix_date_format(
+                            crf_data_dict(crf_obj=crf_obj))
+                        for e_fields in exclude_fields:
+                            try:
+                                del crfdata[e_fields]
+                            except KeyError:
+                                pass
                         mergered_data.append(crfdata)
                         count += 1
+
                 timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
                 fname = study + '_' + crf_name + '_' + 'merged' '_' + mm_field + '_' + timestamp + '.csv'
                 final_path = self.export_path + fname
