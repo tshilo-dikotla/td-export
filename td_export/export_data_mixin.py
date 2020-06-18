@@ -101,7 +101,7 @@ class ExportDataMixin:
                     mm_objs = getattr(crf_obj, mm_field).all()
                     if mm_objs:
                         for mm_obj in mm_objs:
-                            mm_data = {mm_obj.short_name: mm_obj.short_name}
+                            mm_data = {mm_field: mm_obj.short_name}
 
                             crfdata = crf_data_dict(crf_obj=crf_obj)
 
