@@ -1,7 +1,6 @@
 {% extends "edc_dashboard/listboard.html" %}
 {% load admin_urls %}
 {% load edc_base_extras %}
-{% load td_dashboard_extras %}
 
 {% block extra-scripts %}
 {{ block.super }}
@@ -47,7 +46,11 @@
 	<td>{{ result.export_identifier }} </td>
 	<td>{{ result.description }} </td>
 	<td>{{ result.study }} </td>
-	<td><a href={{ result.file_url }}><i class="fa fa-download fa-sm"></i> file download</a></td>
+	<td>{% if result.file_url %}
+	   <a href={{ result.file_url }}><i class="fa fa-download fa-sm"></i> file download</a>
+	{% else %}
+	    Pending.. 
+	{% endif %}</td>
 	<td>{{result.uploaded_at}}</td>
 	<td>{{result.files_generation_time}}</td>
     <td nowrap>{{ result.user_created }}</td>

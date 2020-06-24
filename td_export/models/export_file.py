@@ -1,7 +1,8 @@
 from django.db import models
 from edc_base.model_mixins import BaseUuidModel
-from edc_search.model_mixins import SearchSlugManager
+
 from edc_base.sites import SiteModelMixin
+from edc_search.model_mixins import SearchSlugManager
 from edc_search.model_mixins import SearchSlugModelMixin as Base
 
 from ..identifiers import ExportIdentifier
@@ -23,9 +24,8 @@ class SearchSlugModelMixin(Base):
         abstract = True
 
 
-
 class ExportFile(SiteModelMixin, SearchSlugModelMixin, BaseUuidModel):
-    
+
     identifier_cls = ExportIdentifier
 
     export_identifier = models.CharField(
@@ -42,11 +42,14 @@ class ExportFile(SiteModelMixin, SearchSlugModelMixin, BaseUuidModel):
 
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
-    downnload_time = models.DecimalField(
+    download_time = models.DecimalField(
         null=True,
         max_digits=10,
         decimal_places=2)
- 
+
+    download_complete = models.BooleanField(
+        default=False,)
+
     def __str__(self):
         return f'{self.export_identifier}'
 
