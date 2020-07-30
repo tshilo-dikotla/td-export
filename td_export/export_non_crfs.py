@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 import pandas as pd, datetime, os
 
 from .export_methods import ExportMethods
-from .export_model_lists import exclude_fields
+from .export_model_lists import exclude_fields, exclude_m2m_fields
 
 
 class ExportNonCrfData:
@@ -49,7 +49,8 @@ class ExportNonCrfData:
             fname = 'td_maternal_' + model_name + '_' + timestamp + '.csv'
             final_path = self.export_path + fname
             df_crf = pd.DataFrame(models_data)
-            df_crf.rename(columns={'subject_identifier':'maternal_subject_identifier'}, inplace=True)
+            df_crf.rename(columns={'subject_identifier':
+                                   'maternal_subject_identifier'}, inplace=True)
             df_crf.to_csv(final_path, encoding='utf-8', index=False)
 
     def maternal_m2m_non_crf(self, maternal_many_to_many_non_crf=None):
@@ -66,13 +67,13 @@ class ExportNonCrfData:
                 mm_objs = getattr(crf_obj, mm_field).all()
                 if mm_objs:
                     for mm_obj in mm_objs:
-                        mm_data = mm_obj.__dict__
+                        mm_data = {mm_field: mm_obj.short_name}
 
                         crfdata = self.export_methods_cls.non_crf_obj_dict(obj=crf_obj)
 
                         # Merged many to many and CRF data
                         data = self.export_methods_cls.fix_date_format({**crfdata, **mm_data})
-                        for e_fields in exclude_fields:
+                        for e_fields in exclude_m2m_fields:
                             try:
                                 del data[e_fields]
                             except KeyError:
