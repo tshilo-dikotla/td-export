@@ -100,11 +100,15 @@ maternal_many_to_many_crf = [
     ['maternallifetimearvhistory', 'prior_arv', 'priorarv'],
     ['maternalcontraception', 'contraceptive_relative', 'maternalrelatives'],
     ['maternalcontraception', 'contr', 'contraceptives'],
+    ['maternaldiagnoses', 'diagnoses', 'maternaldiagnoseslist'],
+    ['maternaldiagnoses', 'who', 'wcsdxAdult'],
     ['maternalmedicalhistory', 'who', 'wcsdxadult'],
     ['maternalmedicalhistory', 'mother_chronic', 'chronicconditions'],
     ['maternalmedicalhistory', 'father_chronic', 'chronicconditions'],
     ['maternalmedicalhistory', 'mother_medications', 'maternalmedications'],
     ['maternalpostpartumfu', 'hospitalization_reason', 'maternalhospitalization'],
+    ['maternalpostpartumfu', 'diagnoses', 'maternaldiagnoseslist'],
+    ['maternalpostpartumfu', 'who', 'wcsdxadult'],
     ['maternalsrh', 'contr', 'contraceptives'],
 ]
 
